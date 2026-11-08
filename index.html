@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>GrainCam — 90s Disposable Camera</title>
+  <title>GrainCam — Photolab Host & 90s Disposable Camera</title>
 
-  <!-- Google Fonts: Archivo Black & VT323 -->
+  <!-- Google Fonts: Archivo Black, VT323 & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=VT323&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@500;600;700&family=VT323&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -20,13 +20,14 @@
             funsaver: '#F2C94C',
             matteBlack: '#1A1A1A',
             cardboard: '#E8E3D9',
-            kraft: '#D6BE96',
+            kraft: '#C8AF88',
             lcdGreen: '#39FF14',
             leakRed: '#FF3B30',
           },
           fontFamily: {
             archivo: ['"Archivo Black"', 'sans-serif'],
             vt323: ['"VT323"', 'monospace'],
+            sans: ['"Inter"', 'sans-serif'],
           }
         }
       }
@@ -34,31 +35,169 @@
   </script>
 
   <style>
-    /* ==========================================================================
-       GLOBAL & DESK SURFACE BACKGROUND
-       ========================================================================== */
     * {
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-touch-callout: none;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
       background-color: #121212;
       background-image:
-        radial-gradient(circle at 50% 35%, #242424 0%, #101010 75%),
+        radial-gradient(circle at 50% 35%, #252525 0%, #0E0E0E 78%),
         radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
-      background-size: 100% 100%, 24px 24px;
+      background-size: 100% 100%, 22px 22px;
       min-height: 100vh;
       overflow-x: hidden;
     }
 
     /* ==========================================================================
-       SCREEN 1: 90s CARDBOARD BLISTER PACKAGING
+       SHARED SKEUOMORPHIC SHELLS & BUTTONS
+       ========================================================================== */
+    .camera-plastic-shell {
+      background-color: #1A1A1A;
+      background-image:
+        radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0),
+        linear-gradient(145deg, #232323 0%, #161616 55%, #111111 100%);
+      background-size: 5px 5px, 100% 100%;
+      box-shadow:
+        0 30px 65px rgba(0, 0, 0, 0.88),
+        inset 0 2px 3px rgba(255, 255, 255, 0.14),
+        inset 0 -4px 8px rgba(0, 0, 0, 0.85);
+      border: 2px solid #2A2A2A;
+    }
+
+    /* Kraft Cardboard Surface (Photolab Access Panel) */
+    .kraft-card-panel {
+      background-color: #C8AF88;
+      background-image:
+        radial-gradient(circle at 50% 40%, rgba(255, 248, 231, 0.28) 0%, rgba(120, 92, 52, 0.25) 100%),
+        repeating-linear-gradient(45deg, rgba(0,0,0,0.015) 0px, rgba(0,0,0,0.015) 2px, transparent 2px, transparent 4px);
+      box-shadow:
+        0 12px 28px rgba(0, 0, 0, 0.75),
+        inset 0 2px 2px rgba(255, 255, 255, 0.45),
+        inset 0 -3px 5px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Recessed Dark Input Slot */
+    .recessed-input {
+      background: #242424;
+      color: #F5F2EB;
+      border: 1.5px solid #141414;
+      box-shadow:
+        inset 0 4px 8px rgba(0, 0, 0, 0.85),
+        0 1px 0 rgba(255, 255, 255, 0.35);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .recessed-input:focus {
+      outline: none;
+      border-color: #F2C94C;
+      box-shadow:
+        inset 0 4px 8px rgba(0, 0, 0, 0.9),
+        0 0 0 2px rgba(242, 201, 76, 0.35);
+    }
+
+    /* Tactile 3D Yellow Button (UNLOCK LAB / GRAB CAMERA / SHUTTER) */
+    .tactile-yellow-btn {
+      background: linear-gradient(180deg, #FFE066 0%, #F2C94C 55%, #DFB22B 100%);
+      color: #1A1A1A;
+      border: 2px solid #2A2311;
+      box-shadow:
+        0 5px 0 #1A1A1A,
+        0 8px 14px rgba(0, 0, 0, 0.45),
+        inset 0 2px 1px rgba(255, 255, 255, 0.75);
+      transition: transform 0.06s ease, box-shadow 0.06s ease;
+      cursor: pointer;
+    }
+    .tactile-yellow-btn:active {
+      transform: translateY(4px);
+      box-shadow:
+        0 1px 0 #1A1A1A,
+        0 2px 5px rgba(0, 0, 0, 0.4),
+        inset 0 2px 4px rgba(120, 82, 0, 0.45);
+    }
+
+    /* Tactile 3D Charcoal Button (SAVE & PREVIEW GUEST) */
+    .tactile-dark-btn {
+      background: linear-gradient(180deg, #323232 0%, #1F1F1F 100%);
+      color: #FFFFFF;
+      border: 2px solid #111111;
+      box-shadow:
+        0 5px 0 #0B0B0B,
+        0 8px 16px rgba(0, 0, 0, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+      transition: transform 0.06s ease, box-shadow 0.06s ease;
+      cursor: pointer;
+    }
+    .tactile-dark-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #0B0B0B;
+    }
+
+    /* ==========================================================================
+       SCREEN 2: THE EVENT CLIPBOARD (HOST DASHBOARD)
+       ========================================================================== */
+    .clipboard-paper {
+      background-color: #EAE5DC;
+      background-image:
+        radial-gradient(circle at 50% 35%, #F3EFE8 0%, #DDD5C7 100%);
+      box-shadow:
+        0 30px 65px rgba(0, 0, 0, 0.85),
+        inset 0 2px 3px rgba(255, 255, 255, 0.8),
+        inset 0 -4px 8px rgba(0, 0, 0, 0.18);
+    }
+
+    .polaroid-qr-frame {
+      background: #F9F8F5;
+      box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.22),
+        0 2px 5px rgba(0, 0, 0, 0.15),
+        inset 0 1px 1px rgba(255, 255, 255, 0.9);
+      border: 1px solid #D8D2C7;
+    }
+
+    /* ==========================================================================
+       SCREEN 3: THE WELCOME OVERLAY (GUEST LANDING PAGE WITH SERRATED RECEIPT)
+       ========================================================================== */
+    .receipt-card {
+      background: #EAE4D7;
+      box-shadow:
+        0 22px 45px rgba(0, 0, 0, 0.85),
+        0 4px 12px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    /* Serrated Zig-Zag Torn Receipt Paper Top Edge */
+    .receipt-zigzag-top {
+      height: 14px;
+      width: 100%;
+      background:
+        linear-gradient(-45deg, #EAE4D7 7px, transparent 0),
+        linear-gradient(45deg, #EAE4D7 7px, transparent 0);
+      background-repeat: repeat-x;
+      background-size: 14px 14px;
+      margin-top: -13px;
+    }
+
+    .lcd-green-box {
+      background: linear-gradient(180deg, #101610 0%, #182218 100%);
+      border: 2px solid #0A0E0A;
+      box-shadow:
+        inset 0 4px 10px rgba(0, 0, 0, 0.95),
+        0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .lcd-neon-text {
+      color: #39FF14;
+      text-shadow:
+        0 0 8px rgba(57, 255, 20, 0.85),
+        0 0 18px rgba(57, 255, 20, 0.35);
+    }
+
+    /* ==========================================================================
+       SCREEN 4 & 5: PACKAGING BLISTER & SKEUOMORPHIC CAMERA HARDWARE
        ========================================================================== */
     .blister-cardboard {
-      background:
-        radial-gradient(circle at 50% 45%, #E8E3D9 45%, #C9BEA9 100%);
+      background: radial-gradient(circle at 50% 45%, #E8E3D9 45%, #C9BEA9 100%);
       box-shadow:
         0 28px 60px rgba(0, 0, 0, 0.75),
         inset 0 2px 3px rgba(255, 255, 255, 0.6),
@@ -66,23 +205,19 @@
     }
 
     .kraft-panel {
-      background:
-        radial-gradient(circle at 50% 50%, #DFC8A2 0%, #C8AE82 100%);
+      background: radial-gradient(circle at 50% 50%, #DFC8A2 0%, #C8AE82 100%);
       box-shadow:
         inset 0 3px 8px rgba(0, 0, 0, 0.12),
         inset 0 -2px 6px rgba(0, 0, 0, 0.15);
     }
 
-    /* Retail Euro-Slot Peg Hanger Cutout */
     .peg-cutout {
       width: 96px;
       height: 26px;
       background: #141414;
       border-radius: 999px;
       position: relative;
-      box-shadow:
-        inset 0 4px 8px rgba(0, 0, 0, 0.9),
-        0 1px 0 rgba(255, 255, 255, 0.45);
+      box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.9), 0 1px 0 rgba(255, 255, 255, 0.45);
     }
     .peg-cutout::before {
       content: '';
@@ -97,7 +232,6 @@
       box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.85);
     }
 
-    /* Clear Thermoformed Plastic Blister Bubble */
     .plastic-blister-bubble {
       background: linear-gradient(
         135deg,
@@ -112,19 +246,14 @@
         0 3px 6px rgba(0, 0, 0, 0.2),
         inset 0 4px 12px rgba(255, 255, 255, 0.85),
         inset 0 -6px 14px rgba(0, 0, 0, 0.22);
-      backdrop-filter: blur(1px);
       transform: rotate(-4deg);
     }
 
-    /* Blister Inner Flange Rim */
     .plastic-blister-rim {
       border: 1.5px solid rgba(255, 255, 255, 0.55);
-      box-shadow:
-        inset 0 2px 5px rgba(0, 0, 0, 0.2),
-        0 2px 4px rgba(255, 255, 255, 0.5);
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(255, 255, 255, 0.5);
     }
 
-    /* Perforated Tear Line & Side Notches */
     .perforation-line {
       border-top: 3px dashed #5C5343;
       position: relative;
@@ -140,19 +269,12 @@
       border-radius: 50%;
       box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
     }
-    .perforation-line::before {
-      left: -13px;
-    }
-    .perforation-line::after {
-      right: -13px;
-    }
+    .perforation-line::before { left: -13px; }
+    .perforation-line::after { right: -13px; }
 
-    /* Tear-to-Open Slider Styling */
     .tear-track {
       background: linear-gradient(180deg, #C7B698 0%, #EFE6D5 100%);
-      box-shadow:
-        inset 0 3px 6px rgba(0, 0, 0, 0.35),
-        0 1px 0 rgba(255, 255, 255, 0.7);
+      box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.35), 0 1px 0 rgba(255, 255, 255, 0.7);
     }
 
     .tear-range-input {
@@ -165,9 +287,6 @@
       position: relative;
       z-index: 20;
     }
-    .tear-range-input:active {
-      cursor: grabbing;
-    }
     .tear-range-input::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
@@ -176,24 +295,11 @@
       border-radius: 8px;
       background: linear-gradient(180deg, #E2C696 0%, #B89867 100%);
       border: 2px solid #8A6D3B;
-      box-shadow:
-        0 4px 8px rgba(0, 0, 0, 0.4),
-        inset 0 1px 1px rgba(255, 255, 255, 0.7);
-    }
-    .tear-range-input::-moz-range-thumb {
-      width: 48px;
-      height: 36px;
-      border-radius: 8px;
-      background: linear-gradient(180deg, #E2C696 0%, #B89867 100%);
-      border: 2px solid #8A6D3B;
-      box-shadow:
-        0 4px 8px rgba(0, 0, 0, 0.4),
-        inset 0 1px 1px rgba(255, 255, 255, 0.7);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.7);
     }
 
-    /* Packaging Tear Animation */
     .tearing-away {
-      animation: ripOpenPackage 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation: ripOpenPackage 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
     @keyframes ripOpenPackage {
       0% { transform: scale(1) rotate(0deg); opacity: 1; }
@@ -201,35 +307,14 @@
       100% { transform: translateY(-40px) scale(0.92) rotate(3deg); opacity: 0; pointer-events: none; }
     }
 
-    /* ==========================================================================
-       SCREEN 2: SKEUOMORPHIC MATTE BLACK CAMERA BODY
-       ========================================================================== */
-    .camera-plastic-shell {
-      background-color: #1A1A1A;
-      background-image:
-        radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0),
-        linear-gradient(145deg, #232323 0%, #161616 55%, #111111 100%);
-      background-size: 5px 5px, 100% 100%;
-      box-shadow:
-        0 30px 65px rgba(0, 0, 0, 0.85),
-        inset 0 2px 3px rgba(255, 255, 255, 0.14),
-        inset 0 -4px 8px rgba(0, 0, 0, 0.85),
-        inset 2px 0 4px rgba(255, 255, 255, 0.05);
-      border: 2px solid #2A2A2A;
-    }
-
-    /* Outer Viewfinder Plastic Bezel */
     .viewfinder-outer-bezel {
       background: linear-gradient(145deg, #252525, #141414);
       padding: 12px;
       border-radius: 22px;
-      box-shadow:
-        0 6px 14px rgba(0, 0, 0, 0.75),
-        inset 0 1px 1px rgba(255, 255, 255, 0.12);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.12);
       border: 1px solid #303030;
     }
 
-    /* Deeply Recessed 4:3 Viewfinder Window */
     .viewfinder-recessed {
       aspect-ratio: 4 / 3;
       background: #080808;
@@ -243,68 +328,41 @@
       border: 3px solid #111111;
     }
 
-    /* Glass Lens Glare Overlay */
     .viewfinder-glass-glare {
-      background: linear-gradient(
-        125deg,
-        rgba(255, 255, 255, 0.12) 0%,
-        rgba(255, 255, 255, 0.02) 32%,
-        transparent 50%
-      );
+      background: linear-gradient(125deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 32%, transparent 50%);
       box-shadow: inset 0 8px 18px rgba(0, 0, 0, 0.9);
       pointer-events: none;
     }
 
-    /* Orange Quartz Date Stamp (VT323) */
     .quartz-date-stamp {
       color: #FF8C1A;
-      text-shadow:
-        0 0 6px rgba(255, 110, 0, 0.95),
-        0 0 14px rgba(255, 69, 0, 0.55);
+      text-shadow: 0 0 6px rgba(255, 110, 0, 0.95), 0 0 14px rgba(255, 69, 0, 0.55);
       letter-spacing: 0.08em;
     }
 
-    /* Green Glowing Status LED */
     .led-indicator {
       width: 14px;
       height: 14px;
       border-radius: 50%;
       background: radial-gradient(circle at 35% 35%, #B8FF9E 0%, #39FF14 45%, #168005 100%);
-      box-shadow:
-        0 0 10px #39FF14,
-        0 0 20px rgba(57, 255, 20, 0.6),
-        inset 0 1px 2px rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 10px #39FF14, 0 0 20px rgba(57, 255, 20, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.8);
       border: 1.5px solid #112A0B;
     }
 
-    /* Recessed Digital LCD Window */
     .lcd-counter-window {
       background: linear-gradient(180deg, #071207 0%, #0D1F0D 100%);
-      box-shadow:
-        inset 0 4px 8px rgba(0, 0, 0, 0.95),
-        inset 0 0 6px rgba(0, 0, 0, 0.8),
-        0 1px 0 rgba(255, 255, 255, 0.1);
+      box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.95), inset 0 0 6px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.1);
       border: 2px solid #262626;
       border-radius: 8px;
     }
 
-    .lcd-digits {
-      color: #39FF14;
-      text-shadow:
-        0 0 8px rgba(57, 255, 20, 0.85),
-        0 0 16px rgba(57, 255, 20, 0.35);
-    }
-
-    /* Recessed Pill Track for Physical Flash Switch */
     .flash-pill-track {
       width: 96px;
       height: 40px;
       background: #0E0E0E;
       border-radius: 999px;
       padding: 4px;
-      box-shadow:
-        inset 0 5px 10px rgba(0, 0, 0, 0.95),
-        0 1px 0 rgba(255, 255, 255, 0.1);
+      box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.95), 0 1px 0 rgba(255, 255, 255, 0.1);
       border: 2px solid #272727;
       position: relative;
       cursor: pointer;
@@ -315,9 +373,7 @@
       height: 28px;
       border-radius: 999px;
       background: linear-gradient(180deg, #4A4A4A 0%, #2B2B2B 100%);
-      box-shadow:
-        0 3px 6px rgba(0, 0, 0, 0.85),
-        inset 0 1px 1px rgba(255, 255, 255, 0.28);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.28);
       border: 1px solid #555555;
       transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
       display: flex;
@@ -332,19 +388,14 @@
       border-color: #F2C94C;
     }
 
-    /* Molded Plastic Bezel Housing Around Shutter Button */
     .shutter-housing-bezel {
       background: linear-gradient(145deg, #242424, #141414);
       padding: 12px;
       border-radius: 28px;
-      box-shadow:
-        0 10px 20px rgba(0, 0, 0, 0.8),
-        inset 0 2px 3px rgba(255, 255, 255, 0.08),
-        inset 0 -3px 6px rgba(0, 0, 0, 0.9);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8), inset 0 2px 3px rgba(255, 255, 255, 0.08), inset 0 -3px 6px rgba(0, 0, 0, 0.9);
       border: 2px solid #2C2C2C;
     }
 
-    /* Chunky FunSaver Yellow SHUTTER Button */
     .chunky-shutter-btn {
       background: linear-gradient(180deg, #FFE169 0%, #F2C94C 55%, #D9A726 100%);
       color: #1A1A1A;
@@ -358,25 +409,16 @@
       transition: transform 0.06s ease, box-shadow 0.06s ease;
       cursor: pointer;
     }
-
-    .chunky-shutter-btn:active,
-    .chunky-shutter-btn.pressed {
+    .chunky-shutter-btn:active {
       transform: translate(6px, 8px);
-      box-shadow:
-        0px 0px 0px #080808,
-        0px 2px 4px rgba(0, 0, 0, 0.6),
-        inset 0 3px 6px rgba(120, 82, 0, 0.65);
+      box-shadow: 0px 0px 0px #080808, 0px 2px 4px rgba(0, 0, 0, 0.6), inset 0 3px 6px rgba(120, 82, 0, 0.65);
     }
 
-    /* Vertical Grooved Film-Advance Thumbwheel on Far Right Edge */
     .thumbwheel-recess {
       background: #0B0B0B;
       border-radius: 14px 4px 4px 14px;
       padding: 8px 0 8px 8px;
-      box-shadow:
-        inset 4px 0 10px rgba(0, 0, 0, 0.95),
-        inset 0 4px 8px rgba(0, 0, 0, 0.9),
-        0 1px 0 rgba(255, 255, 255, 0.08);
+      box-shadow: inset 4px 0 10px rgba(0, 0, 0, 0.95), inset 0 4px 8px rgba(0, 0, 0, 0.9), 0 1px 0 rgba(255, 255, 255, 0.08);
       border: 1.5px solid #262626;
       border-right: none;
     }
@@ -386,13 +428,7 @@
       height: 118px;
       border-radius: 6px 0 0 6px;
       background-color: #2A2A2A;
-      background-image: repeating-linear-gradient(
-        180deg,
-        #444444 0px,
-        #444444 3px,
-        #151515 3px,
-        #151515 7px
-      );
+      background-image: repeating-linear-gradient(180deg, #444444 0px, #444444 3px, #151515 3px, #151515 7px);
       box-shadow:
         inset 4px 0 8px rgba(255, 255, 255, 0.14),
         inset -4px 0 10px rgba(0, 0, 0, 0.9),
@@ -403,9 +439,6 @@
       transition: background-position 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    /* ==========================================================================
-       SCREEN 3: DARKROOM ACTIVE (BONUS INTEGRATED SCREEN FROM DESIGN)
-       ========================================================================== */
     .darkroom-shell {
       background: linear-gradient(145deg, #5C1313 0%, #380909 60%, #260505 100%);
       box-shadow:
@@ -417,94 +450,486 @@
 
     .neon-red-text {
       color: #FF3B30;
-      text-shadow:
-        0 0 8px rgba(255, 59, 48, 0.9),
-        0 0 20px rgba(255, 59, 48, 0.5);
+      text-shadow: 0 0 8px rgba(255, 59, 48, 0.9), 0 0 20px rgba(255, 59, 48, 0.5);
     }
   </style>
 </head>
 
-<body class="flex flex-col items-center justify-center min-h-screen p-4">
+<body class="flex flex-col items-center justify-center min-h-screen p-3 sm:p-5">
 
-  <!-- Top Mode Bar so you can easily flip between Packaging, Camera, Darkroom & Gallery -->
-  <nav class="w-full max-w-[400px] mb-4 flex items-center justify-between bg-[#1C1C1C] border border-[#333] rounded-full px-2 py-1.5 shadow-lg text-xs font-vt323 tracking-wider text-gray-300">
-    <button id="nav-packaging" onclick="switchScreen('packaging')" class="px-3 py-1 rounded-full bg-funsaver text-matteBlack font-bold transition">
-      1. PACKAGING
+  <!-- Top Flow Navigation Pill Bar -->
+  <nav class="w-full max-w-[400px] mb-3.5 flex flex-wrap items-center justify-between gap-1 bg-[#1A1A1A] border border-[#333] rounded-2xl px-2.5 py-1.5 shadow-xl text-xs font-vt323 tracking-wider text-gray-300">
+    <button id="nav-auth" onclick="switchScreen('auth')" class="px-2.5 py-1 rounded-lg transition">
+      1. HOST LOGIN
     </button>
-    <button id="nav-camera" onclick="switchScreen('camera')" class="px-3 py-1 rounded-full hover:text-white transition">
-      2. CAMERA [ <span id="nav-count">24</span> ]
+    <button id="nav-dashboard" onclick="switchScreen('dashboard')" class="px-2.5 py-1 rounded-lg transition">
+      2. HOST CLIPBOARD
     </button>
-    <button id="nav-darkroom" onclick="switchScreen('darkroom')" class="px-3 py-1 rounded-full hover:text-white transition">
-      3. DARKROOM (<span id="nav-taken">0</span>)
+    <button id="nav-welcome" onclick="switchScreen('welcome')" class="px-2.5 py-1 rounded-lg transition">
+      3. GUEST LANDING
+    </button>
+    <button id="nav-packaging" onclick="switchScreen('packaging')" class="px-2.5 py-1 rounded-lg transition">
+      4. PACKAGING
+    </button>
+    <button id="nav-camera" onclick="switchScreen('camera')" class="px-2.5 py-1 rounded-lg transition">
+      5. CAMERA [<span id="nav-count">24</span>]
+    </button>
+    <button id="nav-darkroom" onclick="switchScreen('darkroom')" class="px-2.5 py-1 rounded-lg transition">
+      6. DARKROOM (<span id="nav-taken">0</span>)
     </button>
   </nav>
 
+  <!-- Toast Banner -->
+  <div
+    id="toast-banner"
+    class="w-full max-w-[400px] mb-3 hidden bg-funsaver text-matteBlack font-archivo text-xs uppercase tracking-wider px-4 py-2.5 rounded-xl shadow-lg text-center border-2 border-black"
+  ></div>
+
   <!-- ==========================================================================
-       MOBILE-WIDTH CONTAINER (max-width: 400px)
+       MAIN 400PX SKEUOMORPHIC VIEWPORT CONTAINER
        ========================================================================== -->
   <div class="w-full max-w-[400px] relative">
 
     <!-- ========================================================================
-         SCREEN 1: THE "PACKAGING" ONBOARDING SCREEN (90s Blister Pack)
+         SCREEN 1: PHOTOLAB HOST ACCESS (User Registration & Login Page)
+         ======================================================================== -->
+    <section
+      id="screen-auth"
+      class="camera-plastic-shell rounded-[28px] p-6 flex flex-col justify-center"
+    >
+      <!-- Inner Kraft Cardboard Security Card -->
+      <div class="kraft-card-panel rounded-[20px] p-2.5 border-2 border-[#A68B60]">
+        <div class="border-2 border-[#3C3022] rounded-[14px] p-5 flex flex-col">
+
+          <!-- Red AUTHORIZED ONLY Badge -->
+          <div class="bg-leakRed text-white font-archivo text-xs uppercase tracking-widest py-2 px-3 rounded-md text-center shadow-md border border-[#B81D13] mb-5">
+            AUTHORIZED ONLY
+          </div>
+
+          <!-- PHOTOLAB ACCESS Heading -->
+          <h1 class="font-archivo text-[34px] leading-[1.05] tracking-tight text-matteBlack text-center uppercase mb-3">
+            PHOTOLAB<br/>ACCESS
+          </h1>
+
+          <!-- Register vs Sign In Toggle Tabs -->
+          <div class="grid grid-cols-2 gap-1.5 bg-[#A98E66] p-1 rounded-lg mb-4 border border-[#7D6542]">
+            <button
+              id="tab-register-btn"
+              type="button"
+              onclick="setAuthMode('register')"
+              class="py-1.5 rounded-md font-archivo text-[11px] uppercase tracking-wider bg-funsaver text-matteBlack shadow transition"
+            >
+              REGISTER EMAIL
+            </button>
+            <button
+              id="tab-login-btn"
+              type="button"
+              onclick="setAuthMode('login')"
+              class="py-1.5 rounded-md font-archivo text-[11px] uppercase tracking-wider text-matteBlack/75 hover:text-matteBlack transition"
+            >
+              HOST SIGN IN
+            </button>
+          </div>
+
+          <!-- Host Registration / Login Form -->
+          <form id="host-auth-form" onsubmit="handleHostAuthSubmit(event)" novalidate>
+            <!-- Valid Email Input -->
+            <div class="mb-3.5">
+              <label for="host-email-input" class="block font-sans font-bold text-xs uppercase tracking-wider text-matteBlack mb-1">
+                HOST EMAIL ADDRESS *
+              </label>
+              <input
+                id="host-email-input"
+                type="email"
+                required
+                placeholder="couple@wedding.com"
+                class="recessed-input w-full px-3.5 py-2.5 rounded-lg font-sans text-sm placeholder-gray-400"
+              />
+              <p id="email-error-msg" class="hidden text-[11px] font-bold text-[#991B1B] mt-1">
+                Please enter a valid email address (e.g. name@domain.com).
+              </p>
+            </div>
+
+            <!-- Event / Couple Name (Shown on Register) -->
+            <div id="register-couple-field" class="mb-3.5">
+              <label for="host-couple-input" class="block font-sans font-bold text-xs uppercase tracking-wider text-matteBlack mb-1">
+                COUPLE / EVENT TITLE
+              </label>
+              <input
+                id="host-couple-input"
+                type="text"
+                placeholder="Sarah & John's Wedding"
+                value="Sarah & John's Wedding"
+                class="recessed-input w-full px-3.5 py-2.5 rounded-lg font-sans text-sm placeholder-gray-400"
+              />
+            </div>
+
+            <!-- Passcode Input -->
+            <div class="mb-5">
+              <label for="host-passcode-input" class="block font-sans font-bold text-xs uppercase tracking-wider text-matteBlack mb-1">
+                PASSCODE *
+              </label>
+              <input
+                id="host-passcode-input"
+                type="password"
+                required
+                minlength="4"
+                placeholder="••••••••"
+                class="recessed-input w-full px-3.5 py-2.5 rounded-lg font-sans text-sm placeholder-gray-400"
+              />
+            </div>
+
+            <!-- UNLOCK LAB Button -->
+            <button
+              id="auth-submit-btn"
+              type="submit"
+              class="tactile-yellow-btn w-full py-3.5 rounded-xl font-archivo text-base uppercase tracking-wider"
+            >
+              REGISTER & UNLOCK LAB
+            </button>
+          </form>
+
+        </div>
+      </div>
+
+      <!-- Bottom Caption -->
+      <div class="text-center mt-4">
+        <div class="font-archivo text-xs text-[#E8E3D9] tracking-wider uppercase">
+          PHOTOLAB HOST ACCESS
+        </div>
+        <div class="font-sans text-xs text-gray-400">
+          (Register with a valid email to configure your event QR)
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================
+         SCREEN 2: THE EVENT CLIPBOARD (GRAINCAM // HOST USER DASHBOARD)
+         ======================================================================== -->
+    <section
+      id="screen-dashboard"
+      class="clipboard-paper rounded-[28px] overflow-hidden hidden flex-col justify-between border-2 border-[#C7BFA9]"
+    >
+      <!-- Top FunSaver Yellow Header Bar -->
+      <div class="bg-funsaver py-3.5 px-5 border-b-2 border-[#D4AD32] flex items-center justify-between">
+        <span class="font-archivo text-lg tracking-tight text-matteBlack uppercase">
+          GRAINCAM // HOST
+        </span>
+        <div class="flex items-center gap-2">
+          <span id="dashboard-host-badge" class="font-vt323 text-sm bg-black/15 px-2 py-0.5 rounded text-matteBlack truncate max-w-[130px]">
+            host@wedding.com
+          </span>
+          <button
+            onclick="logoutHost()"
+            class="font-vt323 text-xs bg-matteBlack text-funsaver px-2 py-0.5 rounded hover:opacity-90"
+            title="Sign Out"
+          >
+            LOGOUT
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Clipboard Content Area with Right-Side Vertical Total Roll Capacity Track -->
+      <div class="p-5 flex gap-3 relative">
+        <!-- Left/Center Column -->
+        <div class="flex-1 flex flex-col items-center">
+
+          <!-- Polaroid Framed Unique Scannable QR Code -->
+          <div class="polaroid-qr-frame p-3.5 rounded-lg w-full max-w-[215px] flex flex-col items-center mb-2.5">
+            <div class="bg-[#1A1A1A] p-2.5 rounded-sm w-full aspect-square flex items-center justify-center">
+              <div id="host-qr-svg-container" class="w-full h-full bg-white p-1 flex items-center justify-center"></div>
+            </div>
+            <div class="font-archivo text-[11px] tracking-wider text-matteBlack uppercase mt-2.5 mb-0.5">
+              SCAN TO JOIN THE ROLL
+            </div>
+            <div id="qr-token-caption" class="font-vt323 text-xs text-gray-500">
+              ID: GC-2026-X9
+            </div>
+          </div>
+
+          <!-- QR Generation & Download Image Buttons -->
+          <div class="flex flex-wrap justify-center gap-2 mb-4 w-full">
+            <button
+              type="button"
+              onclick="generateNewUniqueQR()"
+              class="bg-funsaver hover:bg-[#e5bc3f] text-matteBlack border border-matteBlack font-archivo text-[10px] uppercase tracking-wider px-3 py-1.5 rounded-full shadow transition"
+            >
+              ↻ GENERATE UNIQUE QR
+            </button>
+            <button
+              type="button"
+              onclick="downloadPrintableTentCardPNG()"
+              class="bg-[#222222] hover:bg-black text-white font-archivo text-[10px] uppercase tracking-wider px-3.5 py-1.5 rounded-full shadow-md transition"
+            >
+              ⬇ DOWNLOAD QR IMAGE (.PNG)
+            </button>
+          </div>
+
+          <!-- Host Configuration Controls -->
+          <div class="w-full space-y-3 text-left border-t border-[#CEC6B6] pt-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-archivo text-[11px] text-matteBlack uppercase tracking-wide">
+                  EVENT SETTINGS
+                </div>
+                <div class="font-sans text-xs text-gray-600">
+                  Configure Guest & Roll Limits
+                </div>
+              </div>
+
+              <!-- Event Active Toggle Pill -->
+              <div class="flex items-center gap-1.5">
+                <span id="event-active-label" class="font-archivo text-[10px] text-matteBlack uppercase">ON</span>
+                <button
+                  id="event-settings-toggle"
+                  type="button"
+                  onclick="toggleEventActiveSwitch()"
+                  class="w-12 h-6 rounded-full bg-[#222222] p-0.5 flex items-center justify-end transition"
+                >
+                  <span class="w-5 h-5 rounded-full bg-funsaver shadow"></span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Event Title / Couple Name -->
+            <div>
+              <label class="block font-archivo text-[10px] text-matteBlack uppercase tracking-wider mb-1">
+                EVENT / COUPLE TITLE (GUEST LANDING HEADER)
+              </label>
+              <input
+                id="cfg-event-title"
+                type="text"
+                value="Sarah & John's Wedding"
+                oninput="syncConfigFromInputs()"
+                class="w-full px-3 py-1.5 rounded-md bg-[#E2DDD2] border border-[#9E9689] font-sans font-semibold text-xs text-matteBlack focus:outline-none focus:border-matteBlack"
+              />
+            </div>
+
+            <!-- Amount of Guests & Images Allowed Per Guest -->
+            <div class="grid grid-cols-2 gap-2.5">
+              <div>
+                <label class="block font-archivo text-[10px] text-matteBlack uppercase tracking-wider mb-1">
+                  AMOUNT OF GUESTS
+                </label>
+                <input
+                  id="cfg-max-guests"
+                  type="number"
+                  min="1"
+                  max="500"
+                  value="10"
+                  oninput="syncConfigFromInputs()"
+                  class="w-full px-3 py-1.5 rounded-md bg-[#E2DDD2] border border-[#9E9689] font-vt323 text-xl text-matteBlack focus:outline-none focus:border-matteBlack"
+                />
+              </div>
+
+              <div>
+                <label class="block font-archivo text-[10px] text-matteBlack uppercase tracking-wider mb-1">
+                  IMAGES / 1 GUEST
+                </label>
+                <input
+                  id="cfg-shots-per-guest"
+                  type="number"
+                  min="1"
+                  max="50"
+                  value="10"
+                  oninput="syncConfigFromInputs()"
+                  class="w-full px-3 py-1.5 rounded-md bg-[#E2DDD2] border border-[#9E9689] font-vt323 text-xl text-matteBlack focus:outline-none focus:border-matteBlack"
+                />
+              </div>
+            </div>
+
+            <!-- Landing Page Custom Welcome Message -->
+            <div>
+              <label class="block font-archivo text-[10px] text-matteBlack uppercase tracking-wider mb-1">
+                WELCOMING CUSTOM TEXT (GUEST LANDING PAGE)
+              </label>
+              <textarea
+                id="cfg-welcome-text"
+                rows="2"
+                oninput="syncConfigFromInputs()"
+                class="w-full px-3 py-2 rounded-md bg-[#E2DDD2] border border-[#9E9689] font-sans text-xs text-matteBlack focus:outline-none focus:border-matteBlack resize-none"
+              >Welcome to the wedding! Grab a shot, but make it count. We only have 100 exposures.</textarea>
+            </div>
+          </div>
+
+          <!-- Primary CTA: SAVE & PREVIEW GUEST -->
+          <button
+            type="button"
+            onclick="saveAndPreviewGuestLanding()"
+            class="tactile-dark-btn w-full py-3 rounded-xl font-archivo text-sm uppercase tracking-wider mt-4"
+          >
+            SAVE & PREVIEW GUEST
+          </button>
+
+          <!-- Shareable Direct Link Copy Helper -->
+          <div class="w-full mt-2.5 flex items-center justify-between text-[11px] font-sans text-gray-600 px-1">
+            <span>Total Pool: <strong id="total-pool-summary">100 exposures</strong></span>
+            <button type="button" onclick="copyGuestQRUrl()" class="text-matteBlack font-bold underline">
+              Copy Guest QR Link
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Column: Vertical "Total Roll Capacity" Track Indicator (from Reference Image) -->
+        <div class="w-7 flex flex-col items-center justify-end pb-4 select-none">
+          <div class="font-sans font-semibold text-[11px] text-matteBlack tracking-wide whitespace-nowrap transform -rotate-90 mb-14">
+            Total Roll Capacity (<span id="vertical-cap-num">100</span>)
+          </div>
+          <div class="w-1.5 h-44 bg-[#222222] rounded-full relative flex flex-col justify-end items-center">
+            <div
+              id="capacity-knob"
+              class="w-4 h-4 rounded-full bg-[#222222] border-2 border-[#EAE5DC] shadow-md absolute -left-[5px]"
+              style="top: 12%;"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================
+         SCREEN 3: THE WELCOME OVERLAY (Guest Landing Page after scanning QR)
+         ======================================================================== -->
+    <section
+      id="screen-welcome"
+      class="camera-plastic-shell rounded-[28px] p-5 hidden flex-col items-center justify-center min-h-[600px] relative overflow-hidden"
+    >
+      <!-- Viewfinder Framing Corner Brackets in Background -->
+      <div class="absolute top-5 left-5 w-6 h-6 border-t-2 border-l-2 border-white/25 pointer-events-none"></div>
+      <div class="absolute top-5 right-5 w-6 h-6 border-t-2 border-r-2 border-white/25 pointer-events-none"></div>
+      <div class="absolute bottom-5 left-5 w-6 h-6 border-b-2 border-l-2 border-white/25 pointer-events-none"></div>
+      <div class="absolute bottom-5 right-5 w-6 h-6 border-b-2 border-r-2 border-white/25 pointer-events-none"></div>
+
+      <!-- Subtle Dimmed Camera Body Silhouette & Green Selfie Mirror in Background -->
+      <div class="w-full max-w-[320px] rounded-2xl bg-[#222222]/90 border border-white/10 p-3.5 pb-8 shadow-2xl flex items-center justify-between mb-[-18px] z-0">
+        <div class="w-8 h-5 rounded bg-black/60 border border-white/10"></div>
+        <!-- Center Viewfinder Eyepiece -->
+        <div class="w-14 h-11 rounded-lg bg-[#141414] border-2 border-[#333] flex items-center justify-center shadow-inner">
+          <div class="w-7 h-6 rounded bg-[#2B3538]"></div>
+        </div>
+        <!-- Neon Green Framed Selfie Mirror Preview (Matches Reference Image) -->
+        <div class="w-16 h-12 rounded-md border-2 border-lcdGreen overflow-hidden bg-[#182218] relative shadow-[0_0_12px_rgba(57,255,20,0.35)] flex items-center justify-center">
+          <span class="font-vt323 text-xs text-lcdGreen/90">LIVE ROLL</span>
+        </div>
+      </div>
+
+      <!-- Torn-Edge Photo Lab Receipt Overlay Card -->
+      <div class="receipt-card w-full max-w-[320px] rounded-b-2xl pt-3 pb-5 px-4 z-10 text-center">
+        <div class="receipt-zigzag-top"></div>
+
+        <!-- Dynamic Wedding / Event Title Configured by Host -->
+        <h2
+          id="landing-event-title"
+          class="font-archivo text-xl tracking-tight text-matteBlack mt-1 mb-3"
+        >
+          Sarah & John's Wedding
+        </h2>
+
+        <!-- Inner Bordered Receipt Box -->
+        <div class="border border-[#9E9585] rounded-xl p-3.5 bg-[#EFECE4]/60 shadow-inner">
+          <!-- Dynamic Custom Welcome Message Configured by Host -->
+          <p
+            id="landing-welcome-text"
+            class="font-sans text-sm text-[#2B2927] leading-snug mb-3"
+          >
+            Welcome to the wedding! Grab a shot, but make it count. We only have 100 exposures.
+          </p>
+
+          <!-- Required Guest Name or Nickname Input -->
+          <div class="mb-3 text-left">
+            <label for="guest-nickname-input" class="block font-archivo text-[10px] uppercase tracking-wider text-matteBlack mb-1">
+              ENTER YOUR NAME OR NICKNAME *
+            </label>
+            <input
+              id="guest-nickname-input"
+              type="text"
+              required
+              maxlength="32"
+              placeholder="e.g. Cousin Maya, Best Man Leo..."
+              class="w-full px-3 py-2 rounded-lg bg-white border-2 border-[#222222] font-sans font-semibold text-xs text-matteBlack placeholder-gray-400 focus:outline-none focus:border-funsaver"
+            />
+            <p id="guest-name-error" class="hidden text-[11px] font-bold text-leakRed mt-1">
+              Please enter your name or nickname to grab your camera!
+            </p>
+          </div>
+
+          <!-- Recessed Neon Green Digital Exposure Counter Window -->
+          <div class="lcd-green-box rounded-lg py-2.5 px-3 text-center">
+            <div
+              id="landing-lcd-counter"
+              class="lcd-neon-text font-vt323 text-4xl leading-none tracking-widest"
+            >
+              100 / 100
+            </div>
+            <div class="lcd-neon-text font-vt323 text-xs uppercase tracking-widest mt-1 opacity-90">
+              SHARED EXPOSURES REMAINING (<span id="landing-per-guest-allowance">10</span> FOR YOU)
+            </div>
+          </div>
+        </div>
+
+        <!-- Chunky FunSaver Yellow GRAB CAMERA Button -->
+        <button
+          type="button"
+          onclick="handleGuestGrabCamera()"
+          class="tactile-yellow-btn w-full py-3 rounded-xl font-archivo text-base uppercase tracking-wider mt-3.5"
+        >
+          GRAB CAMERA
+        </button>
+      </div>
+
+      <!-- Subtle Bottom Camera Lens Silhouette Ring -->
+      <div class="w-24 h-24 rounded-full border-4 border-white/5 bg-black/40 -mt-6 z-0 pointer-events-none"></div>
+    </section>
+
+
+    <!-- ========================================================================
+         SCREEN 4: THE "PACKAGING" ONBOARDING SCREEN (90s Blister Pack)
          ======================================================================== -->
     <section
       id="screen-packaging"
-      class="blister-cardboard rounded-[28px] overflow-hidden flex flex-col justify-between border border-[#B5A890] transition-all duration-300"
+      class="blister-cardboard rounded-[28px] overflow-hidden hidden flex-col justify-between border border-[#B5A890] transition-all duration-300"
     >
       <!-- Top Yellow Header Band with Retail Peg Cutout & 90s Badge -->
       <div class="bg-funsaver pt-4 pb-3 px-5 relative border-b border-[#D5AC31]">
         <div class="flex items-start justify-between">
-          <!-- Subtle Back Icon -->
-          <span class="font-vt323 text-2xl text-matteBlack/80 leading-none">←</span>
-
-          <!-- Retail Peg Hanger Hole -->
+          <button onclick="switchScreen('welcome')" class="font-vt323 text-2xl text-matteBlack/80 leading-none" title="Back to Guest Welcome">←</button>
           <div class="peg-cutout mt-1"></div>
-
-          <!-- 90s Corner Badge -->
           <div class="text-right leading-none">
             <div class="font-archivo text-xl text-matteBlack tracking-tight">90s</div>
-            <div class="font-vt323 text-[11px] text-matteBlack/80 tracking-widest">ISO 400</div>
+            <div id="pkg-shots-badge" class="font-vt323 text-[12px] text-matteBlack/90 tracking-widest">24 EXP</div>
           </div>
         </div>
       </div>
 
       <!-- Cardboard White Banner with "PACKAGING" in Archivo Black -->
-      <div class="bg-cardboard py-4 px-5 text-center border-b border-[#CEC5B4] shadow-inner">
-        <h1 class="font-archivo text-[34px] leading-none tracking-tight text-matteBlack uppercase">
+      <div class="bg-cardboard py-3.5 px-5 text-center border-b border-[#CEC5B4] shadow-inner">
+        <h2 class="font-archivo text-[32px] leading-none tracking-tight text-matteBlack uppercase">
           PACKAGING
-        </h1>
+        </h2>
+        <div id="pkg-guest-label" class="font-vt323 text-sm text-matteBlack/75 tracking-wider mt-0.5">
+          ISSUED TO: GUEST · 10 SHOTS ALLOWED
+        </div>
       </div>
 
       <!-- Center Kraft Area with Clear Plastic Blister Bubble & Camera Inside -->
-      <div class="kraft-panel py-8 px-6 flex items-center justify-center relative">
-        <!-- Clear Plastic Blister Bubble -->
+      <div class="kraft-panel py-7 px-6 flex items-center justify-center relative">
         <div class="plastic-blister-bubble rounded-[26px] p-3.5 w-full max-w-[310px]">
           <div class="plastic-blister-rim rounded-[20px] p-4 bg-white/5 flex items-center justify-center">
-            
-            <!-- Detailed 90s Disposable Camera Body Inside the Blister -->
             <div class="w-full aspect-[16/10] bg-[#262626] rounded-[18px] relative shadow-2xl border-2 border-[#3B3B3B] overflow-hidden flex items-center justify-center">
-              <!-- FunSaver Yellow & Red Diagonal Stripe Wrap -->
               <div class="absolute inset-y-0 left-[22%] right-[26%] bg-funsaver transform -skew-x-12 border-x-4 border-leakRed shadow-inner"></div>
               <div class="absolute top-0 left-[20%] right-[28%] h-7 bg-[#E8E3D9] transform -skew-x-12 border-b-2 border-leakRed"></div>
-
-              <!-- Viewfinder Window Top Center -->
               <div class="absolute top-2.5 left-1/2 -translate-x-1/2 w-11 h-6 bg-[#151515] rounded border-2 border-[#3A3A3A] shadow-inner flex items-center justify-center">
                 <div class="w-5 h-3 bg-[#3A4A52] rounded-sm opacity-80"></div>
               </div>
-
-              <!-- Built-in Xenon Flash Unit Top Right -->
               <div class="absolute top-2.5 right-3 w-12 h-7 bg-gradient-to-b from-gray-100 to-gray-400 rounded border-2 border-[#1A1A1A] shadow-inner flex items-center justify-center">
                 <div class="w-9 h-4 border border-gray-500/60 bg-white/80 rounded-sm"></div>
               </div>
-
-              <!-- Center Molded Plastic Lens Barrel -->
               <div class="relative z-10 mt-3 w-20 h-20 rounded-full bg-gradient-to-br from-[#3B3B3B] to-[#141414] border-4 border-[#222] shadow-[0_8px_16px_rgba(0,0,0,0.85)] flex items-center justify-center">
                 <div class="w-12 h-12 rounded-full bg-[#0C0C0C] border-2 border-[#2E2E2E] flex items-center justify-center shadow-inner">
                   <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-[#112233] via-[#2A527A] to-[#88CCFF]/40 border border-white/20"></div>
                 </div>
               </div>
-
-              <!-- Textured Grip Dots on Right Side -->
               <div class="absolute bottom-3 right-3.5 w-8 h-9 rounded-full bg-[#1C1C1C] border border-[#383838] grid grid-cols-2 gap-1 p-1.5 shadow-inner">
                 <span class="w-1.5 h-1.5 rounded-full bg-[#333]"></span>
                 <span class="w-1.5 h-1.5 rounded-full bg-[#333]"></span>
@@ -512,7 +937,6 @@
                 <span class="w-1.5 h-1.5 rounded-full bg-[#333]"></span>
               </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -530,22 +954,17 @@
       <!-- Perforated Dashed Line & "TEAR TO OPEN" Horizontal Slider -->
       <div class="perforation-line bg-[#DEC79E] px-5 pt-4 pb-5">
         <div class="tear-track rounded-xl h-11 relative flex items-center px-1.5 overflow-hidden">
-          <!-- Fill Progress Strip as User Tears -->
           <div
             id="tear-progress-fill"
-            class="absolute inset-y-0 left-0 bg-gradient-to-r from-[#1A1A1A] to-[#332B1E] opacity-80 pointer-events-none transition-none"
+            class="absolute inset-y-0 left-0 bg-gradient-to-r from-[#1A1A1A] to-[#332B1E] opacity-80 pointer-events-none"
             style="width: 0%;"
           ></div>
-
-          <!-- Centered Label -->
           <span
             id="tear-label-text"
             class="w-full text-center font-archivo text-xs tracking-wider text-matteBlack uppercase pointer-events-none z-10"
           >
             TEAR TO OPEN &rarr;
           </span>
-
-          <!-- Range Input Slider -->
           <input
             id="tear-slider"
             type="range"
@@ -561,7 +980,7 @@
 
 
     <!-- ========================================================================
-         SCREEN 2: THE MAIN CAMERA INTERFACE (Skeuomorphic Matte Black)
+         SCREEN 5: THE MAIN CAMERA INTERFACE (Skeuomorphic Matte Black)
          ======================================================================== -->
     <section
       id="screen-camera"
@@ -573,10 +992,15 @@
         class="fixed inset-0 bg-white pointer-events-none opacity-0 transition-opacity duration-75 z-50"
       ></div>
 
+      <!-- Guest & Event Header Strip on Camera Top -->
+      <div class="flex items-center justify-between px-1 mb-2.5 font-vt323 text-sm text-gray-300">
+        <span id="cam-event-label" class="text-funsaver truncate max-w-[200px]">SARAH & JOHN'S WEDDING</span>
+        <span id="cam-guest-badge" class="bg-white/10 px-2 py-0.5 rounded text-white">GUEST: ANON</span>
+      </div>
+
       <!-- TOP ZONE: 4:3 Deeply Recessed Viewfinder -->
       <div class="viewfinder-outer-bezel">
         <div class="viewfinder-recessed">
-          <!-- Live Webcam Feed -->
           <video
             id="camera-video"
             autoplay
@@ -586,7 +1010,6 @@
             style="filter: contrast(1.08) saturate(1.18) sepia(0.14);"
           ></video>
 
-          <!-- Fallback Atmospheric 90s Film Preview (shown if webcam not active/denied) -->
           <canvas
             id="fallback-viewfinder-canvas"
             width="640"
@@ -594,10 +1017,8 @@
             class="w-full h-full object-cover hidden"
           ></canvas>
 
-          <!-- Subtle 90s Light Leak & Lens Glare Overlay -->
           <div class="viewfinder-glass-glare absolute inset-0"></div>
 
-          <!-- Camera Flip Button (Top Left Corner inside Viewfinder) -->
           <button
             id="flip-camera-btn"
             onclick="flipWebcam()"
@@ -607,7 +1028,6 @@
             [ FLIP CAM ]
           </button>
 
-          <!-- Bottom-Right Orange Quartz Date Stamp (VT323) -->
           <div
             id="viewfinder-date-stamp"
             class="quartz-date-stamp absolute bottom-2.5 right-3.5 font-vt323 text-2xl leading-none select-none pointer-events-none"
@@ -619,21 +1039,18 @@
 
       <!-- MIDDLE ZONE: Status Panel (LED + Recessed Neon Green LCD Counter + Sliding Flash Toggle) -->
       <div class="my-6 px-3 flex items-center justify-between">
-        <!-- Left: Glowing Green LED + Recessed [ 24 ] LCD Window -->
         <div class="flex items-center gap-3.5">
           <div id="ready-led" class="led-indicator" title="Flash & Shutter Ready"></div>
-
           <div class="lcd-counter-window px-3.5 py-1 min-w-[74px] text-center">
             <span
               id="lcd-shot-counter"
-              class="lcd-digits font-vt323 text-4xl leading-none tracking-widest"
+              class="lcd-neon-text font-vt323 text-4xl leading-none tracking-widest"
             >
-              24
+              10
             </span>
           </div>
         </div>
 
-        <!-- Right: Physical Sliding Flash Toggle Switch in Recessed Pill Track -->
         <div class="flex flex-col items-center">
           <div
             id="flash-toggle-track"
@@ -658,14 +1075,12 @@
 
       <!-- BOTTOM ZONE: Chunky Yellow SHUTTER Button + Vertical Grooved Film-Advance Thumbwheel -->
       <div class="pt-1 pb-3 flex items-center justify-between relative">
-        <!-- Left Spacer for Visual Balance -->
         <div class="w-8 flex flex-col items-center justify-center">
-          <span id="wind-status-hint" class="font-vt323 text-xs text-gray-500 uppercase tracking-wider -rotate-90 whitespace-nowrap">
+          <span class="font-vt323 text-xs text-gray-500 uppercase tracking-wider -rotate-90 whitespace-nowrap">
             READY
           </span>
         </div>
 
-        <!-- Center: Molded Housing + Chunky FunSaver Yellow SHUTTER Button -->
         <div class="shutter-housing-bezel">
           <button
             id="shutter-btn"
@@ -678,12 +1093,11 @@
           </button>
         </div>
 
-        <!-- Far Right Edge: Vertical Grooved Thumbwheel -->
         <div class="thumbwheel-recess -mr-5 flex items-center">
           <div
             id="film-thumbwheel"
             onclick="windFilmWheel()"
-            title="Click or Drag to Wind Film Thumbwheel"
+            title="Click to Wind Film Thumbwheel"
             class="thumbwheel-cylinder"
             style="background-position: 0px 0px;"
           ></div>
@@ -704,44 +1118,39 @@
 
 
     <!-- ========================================================================
-         SCREEN 3: DARKROOM ACTIVE & DEVELOPED FILM GALLERY
+         SCREEN 6: DARKROOM ACTIVE & DEVELOPED FILM GALLERY
          ======================================================================== -->
     <section
       id="screen-darkroom"
       class="darkroom-shell rounded-[32px] p-5 hidden flex-col justify-between text-white"
     >
-      <!-- Recessed Darkroom Window -->
       <div class="bg-[#180404] border-4 border-[#2D0707] rounded-2xl p-5 shadow-[inset_0_10px_25px_rgba(0,0,0,0.95)] text-center relative overflow-hidden">
         <div class="font-vt323 text-4xl leading-none tracking-widest neon-red-text uppercase mb-3">
           DARKROOM<br/>ACTIVE
         </div>
 
-        <!-- Developing Tray Illustration -->
         <div class="mx-auto my-3 w-48 h-32 rounded-xl bg-gradient-to-b from-[#4A0B0B] to-[#240404] border-2 border-[#8B1E1E] shadow-inner flex flex-col items-center justify-center relative">
-          <!-- 35mm Canister inside Red Safe-Light Bath -->
           <div class="w-24 h-12 rounded-md bg-gradient-to-r from-[#222] via-[#D97706] to-[#222] border-2 border-black shadow-lg transform -rotate-12 flex items-center justify-center">
             <span class="font-archivo text-[10px] text-black bg-funsaver px-1.5 py-0.5 rounded">400</span>
           </div>
           <span class="font-vt323 text-xs text-red-300/80 mt-2">
             <span id="darkroom-photo-count">0</span> EXPOSURES ON ROLL
           </span>
-          <span class="quartz-date-stamp absolute bottom-1.5 right-2.5 font-vt323 text-lg">
+          <span id="darkroom-date-stamp" class="quartz-date-stamp absolute bottom-1.5 right-2.5 font-vt323 text-lg">
             08.11.2026
           </span>
         </div>
       </div>
 
-      <!-- VCR OSD Mono Countdown Timer Window -->
       <div class="my-5 bg-[#161616] border-4 border-[#3E0D0D] rounded-xl py-3 px-4 text-center shadow-[inset_0_6px_14px_rgba(0,0,0,0.95)]">
         <div id="darkroom-timer" class="font-vt323 text-5xl tracking-widest text-gray-100 leading-none">
           14:23:45
         </div>
       </div>
 
-      <!-- Action Buttons matching Reference Image -->
       <div class="flex flex-col gap-3">
         <button
-          onclick="loadNewRoll()"
+          onclick="loadNewGuestRoll()"
           class="chunky-shutter-btn w-full py-3.5 rounded-xl font-archivo text-lg tracking-wide text-matteBlack uppercase"
         >
           LOAD NEW ROLL
@@ -755,7 +1164,6 @@
         </button>
       </div>
 
-      <!-- Developed 35mm Film Strip Gallery Drawer -->
       <div id="developed-gallery-drawer" class="mt-4 pt-4 border-t border-red-900/50 hidden">
         <div class="flex items-center justify-between mb-2">
           <span class="font-vt323 text-lg text-funsaver">DEVELOPED 35MM PRINTS</span>
@@ -772,13 +1180,28 @@
 
   </div>
 
+  <!-- Load ISO/IEC 18004 Scannable QR Generator from storage-queue.js -->
+  <script src="storage-queue.js"></script>
+
   <!-- ==========================================================================
-       VANILLA JAVASCRIPT: TEAR SLIDER, WEBCAM, AUDIO SYNTH & 90s FILM DEVELOPER
+       APPLICATION LOGIC: AUTH, HOST CLIPBOARD, QR EXPORT, GUEST LANDING & CAMERA
        ========================================================================== -->
   <script>
-    const state = {
-      currentScreen: 'packaging',
-      shotsRemaining: 24,
+    const appState = {
+      currentScreen: 'auth',
+      authMode: 'register', // 'register' | 'login'
+      hostUser: null, // { email, passcode }
+      eventConfig: {
+        code: 'GC-' + Math.random().toString(36).substring(2, 6).toUpperCase(),
+        title: "Sarah & John's Wedding",
+        maxGuests: 10,
+        shotsPerGuest: 10,
+        welcomeText: 'Welcome to the wedding! Grab a shot, but make it count. We only have 100 exposures.',
+        active: true
+      },
+      guestName: '',
+      shotsRemaining: 10,
+      sharedRemaining: 100,
       flashOn: true,
       facingMode: 'environment',
       stream: null,
@@ -787,7 +1210,59 @@
       audioCtx: null
     };
 
-    // Format today's date as DD.MM.YYYY for the VT323 Quartz Date Stamp
+    // --------------------------------------------------------------------------
+    // INITIALIZATION & URL QR SCAN PARAMETER PARSING
+    // --------------------------------------------------------------------------
+    window.addEventListener('DOMContentLoaded', () => {
+      const todayStamp = getFormattedDateStamp();
+      document.getElementById('viewfinder-date-stamp').textContent = todayStamp;
+      document.getElementById('darkroom-date-stamp').textContent = todayStamp;
+
+      // Load saved Host configuration & photos from localStorage if available
+      try {
+        const savedHost = localStorage.getItem('graincam_host_user');
+        if (savedHost) appState.hostUser = JSON.parse(savedHost);
+
+        const savedConfig = localStorage.getItem('graincam_event_config');
+        if (savedConfig) {
+          appState.eventConfig = { ...appState.eventConfig, ...JSON.parse(savedConfig) };
+        }
+
+        const savedPhotos = localStorage.getItem('graincam_photos');
+        if (savedPhotos) {
+          appState.photos = JSON.parse(savedPhotos);
+        }
+      } catch (e) {}
+
+      // Check if opened via scanned QR Code URL (?g=1&c=...&t=...&m=...&s=...&w=...)
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('g') === '1') {
+        if (params.get('c')) appState.eventConfig.code = params.get('c');
+        if (params.get('t')) appState.eventConfig.title = params.get('t');
+        if (params.get('m')) appState.eventConfig.maxGuests = Math.max(1, parseInt(params.get('m'), 10) || 10);
+        if (params.get('s')) appState.eventConfig.shotsPerGuest = Math.max(1, parseInt(params.get('s'), 10) || 10);
+        if (params.get('w')) appState.eventConfig.welcomeText = params.get('w');
+
+        populateDashboardInputs();
+        syncGuestLandingUI();
+        updateGalleryCounters();
+        switchScreen('welcome');
+        showToast('QR Code Scanned! Enter your nickname to grab your camera.');
+        return;
+      }
+
+      populateDashboardInputs();
+      syncGuestLandingUI();
+      updateGalleryCounters();
+
+      if (appState.hostUser) {
+        document.getElementById('dashboard-host-badge').textContent = appState.hostUser.email;
+        switchScreen('dashboard');
+      } else {
+        switchScreen('auth');
+      }
+    });
+
     function getFormattedDateStamp() {
       const now = new Date();
       const dd = String(now.getDate()).padStart(2, '0');
@@ -796,10 +1271,302 @@
       return `${dd}.${mm}.${yyyy}`;
     }
 
-    document.getElementById('viewfinder-date-stamp').textContent = getFormattedDateStamp();
+    function showToast(msg) {
+      const el = document.getElementById('toast-banner');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => el.classList.add('hidden'), 3400);
+    }
 
     // --------------------------------------------------------------------------
-    // 1. PACKAGING "TEAR TO OPEN" SLIDER INTERACTION
+    // 1. PHOTOLAB HOST ACCESS (REGISTRATION WITH VALID EMAIL & LOGIN)
+    // --------------------------------------------------------------------------
+    function setAuthMode(mode) {
+      appState.authMode = mode;
+      const regBtn = document.getElementById('tab-register-btn');
+      const logBtn = document.getElementById('tab-login-btn');
+      const coupleField = document.getElementById('register-couple-field');
+      const submitBtn = document.getElementById('auth-submit-btn');
+
+      if (mode === 'register') {
+        regBtn.className = 'py-1.5 rounded-md font-archivo text-[11px] uppercase tracking-wider bg-funsaver text-matteBlack shadow transition';
+        logBtn.className = 'py-1.5 rounded-md font-archivo text-[11px] uppercase tracking-wider text-matteBlack/75 hover:text-matteBlack transition';
+        coupleField.classList.remove('hidden');
+        submitBtn.textContent = 'REGISTER & UNLOCK LAB';
+      } else {
+        logBtn.className = 'py-1.5 rounded-md font-archivo text-[11px] uppercase tracking-wider bg-funsaver text-matteBlack shadow transition';
+        regBtn.className = 'py-1.5 rounded-md font-archivo text-[11px] uppercase tracking-wider text-matteBlack/75 hover:text-matteBlack transition';
+        coupleField.classList.add('hidden');
+        submitBtn.textContent = 'UNLOCK LAB';
+      }
+    }
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(email).trim());
+    }
+
+    function handleHostAuthSubmit(e) {
+      e.preventDefault();
+      const emailInput = document.getElementById('host-email-input');
+      const passInput = document.getElementById('host-passcode-input');
+      const coupleInput = document.getElementById('host-couple-input');
+      const errEl = document.getElementById('email-error-msg');
+
+      const email = emailInput.value.trim();
+      const passcode = passInput.value.trim();
+
+      if (!isValidEmail(email)) {
+        errEl.classList.remove('hidden');
+        emailInput.focus();
+        return;
+      }
+      errEl.classList.add('hidden');
+
+      if (passcode.length < 4) {
+        showToast('Passcode must be at least 4 characters.');
+        passInput.focus();
+        return;
+      }
+
+      if (appState.authMode === 'register' && coupleInput.value.trim()) {
+        appState.eventConfig.title = coupleInput.value.trim();
+      }
+
+      appState.hostUser = { email, passcode };
+      try {
+        localStorage.setItem('graincam_host_user', JSON.stringify(appState.hostUser));
+        localStorage.setItem('graincam_event_config', JSON.stringify(appState.eventConfig));
+      } catch (err) {}
+
+      document.getElementById('dashboard-host-badge').textContent = email;
+      populateDashboardInputs();
+      playSwitchClickSound();
+      showToast(`Welcome to Photolab Host Dashboard, ${email}!`);
+      switchScreen('dashboard');
+    }
+
+    function logoutHost() {
+      appState.hostUser = null;
+      try {
+        localStorage.removeItem('graincam_host_user');
+      } catch (e) {}
+      switchScreen('auth');
+    }
+
+    // --------------------------------------------------------------------------
+    // 2. HOST DASHBOARD ("THE EVENT CLIPBOARD") & UNIQUE QR CODE GENERATOR
+    // --------------------------------------------------------------------------
+    function populateDashboardInputs() {
+      const cfg = appState.eventConfig;
+      document.getElementById('cfg-event-title').value = cfg.title;
+      document.getElementById('cfg-max-guests').value = cfg.maxGuests;
+      document.getElementById('cfg-shots-per-guest').value = cfg.shotsPerGuest;
+      document.getElementById('cfg-welcome-text').value = cfg.welcomeText;
+      document.getElementById('qr-token-caption').textContent = `ID: ${cfg.code}`;
+      syncConfigFromInputs();
+    }
+
+    function buildGuestShareUrl() {
+      const cfg = appState.eventConfig;
+      const base = window.location.origin + window.location.pathname;
+      const params = new URLSearchParams({
+        g: '1',
+        c: cfg.code,
+        t: cfg.title.slice(0, 40),
+        m: String(cfg.maxGuests),
+        s: String(cfg.shotsPerGuest),
+        w: cfg.welcomeText.slice(0, 110)
+      });
+      return `${base}?${params.toString()}`;
+    }
+
+    function syncConfigFromInputs() {
+      const title = document.getElementById('cfg-event-title').value.trim() || "Sarah & John's Wedding";
+      const maxGuests = Math.max(1, Math.min(500, parseInt(document.getElementById('cfg-max-guests').value, 10) || 10));
+      const shotsPerGuest = Math.max(1, Math.min(50, parseInt(document.getElementById('cfg-shots-per-guest').value, 10) || 10));
+      const welcomeText = document.getElementById('cfg-welcome-text').value.trim() || 'Welcome! Grab a shot, make it count.';
+
+      appState.eventConfig.title = title;
+      appState.eventConfig.maxGuests = maxGuests;
+      appState.eventConfig.shotsPerGuest = shotsPerGuest;
+      appState.eventConfig.welcomeText = welcomeText;
+
+      const totalPool = maxGuests * shotsPerGuest;
+      document.getElementById('total-pool-summary').textContent = `${totalPool} exposures (${maxGuests} guests × ${shotsPerGuest} shots)`;
+      document.getElementById('vertical-cap-num').textContent = totalPool;
+
+      // Move vertical capacity knob proportionally
+      const pct = Math.min(85, Math.max(8, 100 - Math.round((totalPool / 1200) * 85)));
+      document.getElementById('capacity-knob').style.top = `${pct}%`;
+
+      try {
+        localStorage.setItem('graincam_event_config', JSON.stringify(appState.eventConfig));
+      } catch (e) {}
+
+      renderHostQRCode();
+      syncGuestLandingUI();
+    }
+
+    function renderHostQRCode() {
+      const container = document.getElementById('host-qr-svg-container');
+      if (!container || typeof window.generateEventQRCodeSVG !== 'function') return;
+      const url = buildGuestShareUrl();
+      container.innerHTML = window.generateEventQRCodeSVG(url, 168, '#1A1A1A', '#FFFFFF');
+    }
+
+    function generateNewUniqueQR() {
+      appState.eventConfig.code = 'GC-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+      document.getElementById('qr-token-caption').textContent = `ID: ${appState.eventConfig.code}`;
+      syncConfigFromInputs();
+      playSwitchClickSound();
+      showToast(`Generated new unique QR code (${appState.eventConfig.code})!`);
+    }
+
+    function toggleEventActiveSwitch() {
+      appState.eventConfig.active = !appState.eventConfig.active;
+      const btn = document.getElementById('event-settings-toggle');
+      const label = document.getElementById('event-active-label');
+      if (appState.eventConfig.active) {
+        btn.classList.remove('justify-start');
+        btn.classList.add('justify-end');
+        label.textContent = 'ON';
+      } else {
+        btn.classList.remove('justify-end');
+        btn.classList.add('justify-start');
+        label.textContent = 'OFF';
+      }
+      playSwitchClickSound();
+    }
+
+    /**
+     * Renders and downloads a high-resolution Printable Tent Card PNG with the unique QR code
+     */
+    function downloadPrintableTentCardPNG() {
+      const cfg = appState.eventConfig;
+      const url = buildGuestShareUrl();
+      const svgString = window.generateEventQRCodeSVG(url, 520, '#1A1A1A', '#FFFFFF');
+
+      const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+      const domUrl = URL.createObjectURL(svgBlob);
+      const img = new Image();
+
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 800;
+        canvas.height = 1020;
+        const ctx = canvas.getContext('2d');
+
+        // 1. Cardboard Cream Background
+        ctx.fillStyle = '#EAE5DC';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // 2. Top FunSaver Yellow Header Banner
+        ctx.fillStyle = '#F2C94C';
+        ctx.fillRect(0, 0, canvas.width, 110);
+        ctx.fillStyle = '#1A1A1A';
+        ctx.font = 'bold 34px "Archivo Black", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('GRAINCAM // DISPOSABLE ROLL', canvas.width / 2, 68);
+
+        // 3. Polaroid White Card Frame
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(110, 150, 580, 660);
+        ctx.strokeStyle = '#1A1A1A';
+        ctx.lineWidth = 16;
+        ctx.strokeRect(140, 180, 520, 520);
+
+        // 4. Draw Scannable QR Code Inside Frame
+        ctx.drawImage(img, 148, 188, 504, 504);
+        URL.revokeObjectURL(domUrl);
+
+        // 5. Polaroid Caption & Event Details
+        ctx.fillStyle = '#1A1A1A';
+        ctx.font = 'bold 30px "Archivo Black", sans-serif';
+        ctx.fillText('SCAN TO JOIN THE ROLL', canvas.width / 2, 765);
+
+        ctx.font = 'bold 32px "Archivo Black", sans-serif';
+        ctx.fillText(cfg.title.toUpperCase(), canvas.width / 2, 875);
+
+        ctx.fillStyle = '#333333';
+        ctx.font = '600 22px "Inter", sans-serif';
+        ctx.fillText(
+          `${cfg.shotsPerGuest} Shots Per Guest · ${cfg.maxGuests} Guests Max · ID: ${cfg.code}`,
+          canvas.width / 2,
+          920
+        );
+
+        const a = document.createElement('a');
+        a.href = canvas.toDataURL('image/png');
+        a.download = `${cfg.title.replace(/[^a-zA-Z0-9]/g, '_')}_QR_Card.png`;
+        a.click();
+        showToast('Downloaded Printable QR Code Image (.PNG)!');
+      };
+
+      img.src = domUrl;
+    }
+
+    function copyGuestQRUrl() {
+      const url = buildGuestShareUrl();
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).catch(() => {});
+      }
+      showToast('Copied Guest QR Link to clipboard!');
+    }
+
+    function saveAndPreviewGuestLanding() {
+      syncConfigFromInputs();
+      playSwitchClickSound();
+      showToast('Settings saved! Previewing Guest Landing Page...');
+      switchScreen('welcome');
+    }
+
+    // --------------------------------------------------------------------------
+    // 3. GUEST LANDING PAGE ("THE WELCOME OVERLAY")
+    // --------------------------------------------------------------------------
+    function syncGuestLandingUI() {
+      const cfg = appState.eventConfig;
+      const totalPool = cfg.maxGuests * cfg.shotsPerGuest;
+      const takenTotal = appState.photos.length;
+      const remainingPool = Math.max(0, totalPool - takenTotal);
+
+      document.getElementById('landing-event-title').textContent = cfg.title;
+      document.getElementById('landing-welcome-text').textContent = cfg.welcomeText;
+      document.getElementById('landing-lcd-counter').textContent = `${remainingPool} / ${totalPool}`;
+      document.getElementById('landing-per-guest-allowance').textContent = `${cfg.shotsPerGuest} SHOTS`;
+    }
+
+    function handleGuestGrabCamera() {
+      const nameInput = document.getElementById('guest-nickname-input');
+      const errEl = document.getElementById('guest-name-error');
+      const nickname = nameInput.value.trim();
+
+      if (!nickname) {
+        errEl.classList.remove('hidden');
+        nameInput.focus();
+        return;
+      }
+      errEl.classList.add('hidden');
+
+      appState.guestName = nickname;
+      appState.shotsRemaining = appState.eventConfig.shotsPerGuest;
+
+      // Update Packaging & Camera screens with Guest's name and configured shot limit
+      const formattedShots = String(appState.shotsRemaining).padStart(2, '0');
+      document.getElementById('pkg-shots-badge').textContent = `${formattedShots} EXP`;
+      document.getElementById('pkg-guest-label').textContent =
+        `ISSUED TO: ${nickname.toUpperCase()} · ${appState.shotsRemaining} SHOTS ALLOWED`;
+      document.getElementById('cam-event-label').textContent = appState.eventConfig.title.toUpperCase();
+      document.getElementById('cam-guest-badge').textContent = `GUEST: ${nickname.toUpperCase()}`;
+      document.getElementById('lcd-shot-counter').textContent = formattedShots;
+      document.getElementById('nav-count').textContent = formattedShots;
+
+      playSwitchClickSound();
+      switchScreen('packaging');
+    }
+
+    // --------------------------------------------------------------------------
+    // 4. PACKAGING "TEAR TO OPEN" SLIDER INTERACTION
     // --------------------------------------------------------------------------
     const tearSlider = document.getElementById('tear-slider');
     const tearFill = document.getElementById('tear-progress-fill');
@@ -814,7 +1581,7 @@
         playCardboardTearTick(val);
       }
 
-      if (val >= 92) {
+      if (val >= 90) {
         tearSlider.disabled = true;
         tearLabel.textContent = 'RIPPING OPEN...';
         tearLabel.classList.add('text-funsaver');
@@ -829,39 +1596,44 @@
           tearLabel.textContent = 'TEAR TO OPEN →';
           tearLabel.classList.remove('text-funsaver');
           switchScreen('camera');
-        }, 520);
+        }, 480);
       }
     });
 
     tearSlider.addEventListener('change', (e) => {
-      if (Number(e.target.value) < 92) {
-        // Snap back if not torn all the way across
+      if (Number(e.target.value) < 90) {
         tearSlider.value = 0;
         tearFill.style.width = '0%';
       }
     });
 
     // --------------------------------------------------------------------------
-    // 2. SCREEN NAVIGATION & WEBCAM STREAM MANAGEMENT
+    // 5. SCREEN NAVIGATION & WEBCAM STREAM MANAGEMENT
     // --------------------------------------------------------------------------
     function switchScreen(screenName) {
-      state.currentScreen = screenName;
+      appState.currentScreen = screenName;
+      const screens = ['auth', 'dashboard', 'welcome', 'packaging', 'camera', 'darkroom'];
 
-      const screens = ['packaging', 'camera', 'darkroom'];
       screens.forEach((s) => {
         const el = document.getElementById(`screen-${s}`);
         const navBtn = document.getElementById(`nav-${s}`);
         if (s === screenName) {
           el.classList.remove('hidden');
           el.classList.add('flex');
-          navBtn.classList.add('bg-funsaver', 'text-matteBlack', 'font-bold');
+          if (navBtn) navBtn.classList.add('bg-funsaver', 'text-matteBlack', 'font-bold');
         } else {
           el.classList.add('hidden');
           el.classList.remove('flex');
-          navBtn.classList.remove('bg-funsaver', 'text-matteBlack', 'font-bold');
+          if (navBtn) navBtn.classList.remove('bg-funsaver', 'text-matteBlack', 'font-bold');
         }
       });
 
+      if (screenName === 'dashboard') {
+        renderHostQRCode();
+      }
+      if (screenName === 'welcome') {
+        syncGuestLandingUI();
+      }
       if (screenName === 'camera') {
         startWebcam();
       } else {
@@ -877,22 +1649,20 @@
 
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         try {
-          state.stream = await navigator.mediaDevices.getUserMedia({
+          appState.stream = await navigator.mediaDevices.getUserMedia({
             audio: false,
             video: {
-              facingMode: { ideal: state.facingMode },
+              facingMode: { ideal: appState.facingMode },
               width: { ideal: 1280 },
               height: { ideal: 960 }
             }
           });
-          video.srcObject = state.stream;
+          video.srcObject = appState.stream;
           video.classList.remove('hidden');
           fallbackCanvas.classList.add('hidden');
           await video.play();
           return;
-        } catch (err) {
-          // Fall back to atmospheric 90s viewfinder canvas if no webcam or permission denied
-        }
+        } catch (err) {}
       }
 
       video.classList.add('hidden');
@@ -901,18 +1671,17 @@
     }
 
     function stopWebcam() {
-      if (state.stream) {
-        state.stream.getTracks().forEach((t) => t.stop());
-        state.stream = null;
+      if (appState.stream) {
+        appState.stream.getTracks().forEach((t) => t.stop());
+        appState.stream = null;
       }
     }
 
     function flipWebcam() {
-      state.facingMode = state.facingMode === 'environment' ? 'user' : 'environment';
+      appState.facingMode = appState.facingMode === 'environment' ? 'user' : 'environment';
       startWebcam();
     }
 
-    // Draws a moody 90s coastal/silhouette scene (matching the mockup viewfinder) when no webcam is active
     function drawFallbackViewfinderScene() {
       const canvas = document.getElementById('fallback-viewfinder-canvas');
       if (!canvas) return;
@@ -920,7 +1689,6 @@
       const w = canvas.width;
       const h = canvas.height;
 
-      // Overcast nostalgic sky & sea gradient
       const sky = ctx.createLinearGradient(0, 0, 0, h);
       sky.addColorStop(0, '#D8D4CD');
       sky.addColorStop(0.52, '#E5C69B');
@@ -929,15 +1697,12 @@
       ctx.fillStyle = sky;
       ctx.fillRect(0, 0, w, h);
 
-      // Distant pier & horizon
       ctx.fillStyle = '#3A3532';
       ctx.fillRect(0, h * 0.52, w * 0.65, 6);
 
-      // Right vertical window/beam pillar
       ctx.fillStyle = '#1E1A17';
       ctx.fillRect(w * 0.78, 0, w * 0.08, h);
 
-      // Subject silhouette taking a photo in center
       ctx.fillStyle = '#1C1917';
       ctx.beginPath();
       ctx.arc(w * 0.48, h * 0.46, 36, 0, Math.PI * 2);
@@ -950,41 +1715,35 @@
     }
 
     // --------------------------------------------------------------------------
-    // 3. PHYSICAL FLASH SLIDER SWITCH, THUMBWHEEL & CHUNKY SHUTTER
+    // 6. CAMERA CONTROLS: FLASH SWITCH, THUMBWHEEL & SHUTTER CAPTURE
     // --------------------------------------------------------------------------
     function toggleFlashSwitch() {
-      state.flashOn = !state.flashOn;
+      appState.flashOn = !appState.flashOn;
       const track = document.getElementById('flash-toggle-track');
       const label = document.getElementById('flash-state-text');
       const led = document.getElementById('ready-led');
 
-      track.classList.toggle('active', state.flashOn);
-      track.setAttribute('aria-checked', String(state.flashOn));
-      label.textContent = state.flashOn ? 'ON' : 'OFF';
-
-      if (state.flashOn) {
-        led.style.opacity = '1';
-      } else {
-        led.style.opacity = '0.35';
-      }
+      track.classList.toggle('active', appState.flashOn);
+      track.setAttribute('aria-checked', String(appState.flashOn));
+      label.textContent = appState.flashOn ? 'ON' : 'OFF';
+      led.style.opacity = appState.flashOn ? '1' : '0.35';
       playSwitchClickSound();
     }
 
     function windFilmWheel() {
-      state.wheelOffset -= 28;
+      appState.wheelOffset -= 28;
       const wheel = document.getElementById('film-thumbwheel');
-      wheel.style.backgroundPosition = `0px ${state.wheelOffset}px`;
+      wheel.style.backgroundPosition = `0px ${appState.wheelOffset}px`;
       playThumbwheelRatchetSound();
     }
 
     function fireShutter() {
-      if (state.shotsRemaining <= 0) {
+      if (appState.shotsRemaining <= 0) {
         switchScreen('darkroom');
         return;
       }
 
-      // 1. Trigger Flash Burst if Flash is ON
-      if (state.flashOn) {
+      if (appState.flashOn) {
         const burst = document.getElementById('flash-burst-overlay');
         burst.style.opacity = '0.95';
         setTimeout(() => {
@@ -992,31 +1751,26 @@
         }, 110);
       }
 
-      // 2. Play mechanical shutter snap + automatic thumbwheel ratchet wind
       playShutterAndWindAudio();
       windFilmWheel();
-
-      // 3. Capture & Develop 90s Film Frame
       capture90sFilmPhoto();
 
-      // 4. Decrement Neon Green LCD Shot Counter
-      state.shotsRemaining = Math.max(0, state.shotsRemaining - 1);
-      const formattedCount = String(state.shotsRemaining).padStart(2, '0');
+      appState.shotsRemaining = Math.max(0, appState.shotsRemaining - 1);
+      const formattedCount = String(appState.shotsRemaining).padStart(2, '0');
       document.getElementById('lcd-shot-counter').textContent = formattedCount;
       document.getElementById('nav-count').textContent = formattedCount;
 
       const statusMsg = document.getElementById('camera-status-msg');
       statusMsg.textContent =
-        state.shotsRemaining > 0
-          ? `EXPOSURE SAVED · ${state.shotsRemaining} LEFT ON ROLL`
-          : 'ROLL FINISHED! OPENING DARKROOM...';
+        appState.shotsRemaining > 0
+          ? `SHOT BY ${(appState.guestName || 'GUEST').toUpperCase()} · ${appState.shotsRemaining} LEFT`
+          : 'ROLL COMPLETE! OPENING DARKROOM...';
 
-      if (state.shotsRemaining === 0) {
-        setTimeout(() => switchScreen('darkroom'), 900);
+      if (appState.shotsRemaining === 0) {
+        setTimeout(() => switchScreen('darkroom'), 850);
       }
     }
 
-    // Captures current webcam frame (or fallback scene) with 90s grain, vignette, light leak & VT323 date stamp
     function capture90sFilmPhoto() {
       const video = document.getElementById('camera-video');
       const fallbackCanvas = document.getElementById('fallback-viewfinder-canvas');
@@ -1026,32 +1780,32 @@
       out.height = 600;
       const ctx = out.getContext('2d');
 
-      if (state.stream && !video.classList.contains('hidden') && video.videoWidth > 0) {
+      if (appState.stream && !video.classList.contains('hidden') && video.videoWidth > 0) {
         ctx.drawImage(video, 0, 0, out.width, out.height);
       } else {
         drawFallbackViewfinderScene();
         ctx.drawImage(fallbackCanvas, 0, 0, out.width, out.height);
       }
 
-      // Warm FunSaver 400 color cast
+      // FunSaver warm color grade
       ctx.fillStyle = 'rgba(242, 201, 76, 0.08)';
       ctx.fillRect(0, 0, out.width, out.height);
 
-      // Disposable plastic lens vignette
+      // Vignette
       const vig = ctx.createRadialGradient(400, 300, 180, 400, 300, 520);
       vig.addColorStop(0, 'rgba(0,0,0,0)');
       vig.addColorStop(1, 'rgba(10,8,6,0.58)');
       ctx.fillStyle = vig;
       ctx.fillRect(0, 0, out.width, out.height);
 
-      // Subtle Light Leak Red (#FF3B30) on left edge
+      // Red light leak on left edge
       const leak = ctx.createLinearGradient(0, 0, 190, 0);
       leak.addColorStop(0, 'rgba(255, 59, 48, 0.28)');
       leak.addColorStop(1, 'rgba(255, 59, 48, 0)');
       ctx.fillStyle = leak;
       ctx.fillRect(0, 0, out.width, out.height);
 
-      // Orange VT323 Date Stamp in bottom-right corner
+      // Orange VT323 Quartz Date Stamp
       ctx.save();
       ctx.font = 'bold 34px "VT323", monospace';
       ctx.textAlign = 'right';
@@ -1061,31 +1815,37 @@
       ctx.fillText(getFormattedDateStamp(), out.width - 28, out.height - 22);
       ctx.restore();
 
-      const dataUrl = out.toDataURL('image/jpeg', 0.88);
-      state.photos.unshift({
+      const dataUrl = out.toDataURL('image/jpeg', 0.86);
+      const shotIndex = appState.photos.length + 1;
+      appState.photos.unshift({
         id: Date.now(),
-        frame: 24 - state.shotsRemaining + 1,
+        frame: shotIndex,
+        guest: appState.guestName || 'Guest',
         dataUrl
       });
+
+      try {
+        localStorage.setItem('graincam_photos', JSON.stringify(appState.photos.slice(0, 30)));
+      } catch (e) {}
 
       updateGalleryCounters();
     }
 
     function updateGalleryCounters() {
-      const count = state.photos.length;
+      const count = appState.photos.length;
       document.getElementById('nav-taken').textContent = count;
       document.getElementById('taken-pill-count').textContent = count;
       document.getElementById('darkroom-photo-count').textContent = count;
       document.getElementById('gallery-btn-count').textContent = count;
 
       const grid = document.getElementById('gallery-grid');
-      grid.innerHTML = state.photos
+      grid.innerHTML = appState.photos
         .map(
           (p) => `
           <div class="bg-black p-1.5 rounded border border-red-900/60">
             <div class="flex justify-between font-vt323 text-xs text-funsaver mb-1">
-              <span>EXP #${p.frame}</span>
-              <a href="${p.dataUrl}" download="GrainCam_Frame_${p.frame}.jpg" class="hover:underline">SAVE</a>
+              <span class="truncate max-w-[95px]">#${p.frame} ${p.guest}</span>
+              <a href="${p.dataUrl}" download="GrainCam_${p.guest.replace(/\s+/g, '_')}_${p.frame}.jpg" class="hover:underline">SAVE</a>
             </div>
             <img src="${p.dataUrl}" alt="Frame ${p.frame}" class="w-full aspect-[4/3] object-cover rounded-sm" />
           </div>
@@ -1099,23 +1859,24 @@
       drawer.classList.toggle('hidden');
     }
 
-    function loadNewRoll() {
-      state.shotsRemaining = 24;
-      document.getElementById('lcd-shot-counter').textContent = '24';
-      document.getElementById('nav-count').textContent = '24';
-      switchScreen('packaging');
+    function loadNewGuestRoll() {
+      appState.shotsRemaining = appState.eventConfig.shotsPerGuest;
+      const formatted = String(appState.shotsRemaining).padStart(2, '0');
+      document.getElementById('lcd-shot-counter').textContent = formatted;
+      document.getElementById('nav-count').textContent = formatted;
+      switchScreen('welcome');
     }
 
     function downloadAllPrints() {
-      state.photos.forEach((p) => {
+      appState.photos.forEach((p) => {
         const a = document.createElement('a');
         a.href = p.dataUrl;
-        a.download = `GrainCam_Frame_${p.frame}.jpg`;
+        a.download = `GrainCam_${(p.guest || 'Guest').replace(/\s+/g, '_')}_Frame_${p.frame}.jpg`;
         a.click();
       });
     }
 
-    // Live Darkroom VCR OSD Mono Countdown Clock
+    // Darkroom VCR Countdown Timer
     let darkroomSeconds = 14 * 3600 + 23 * 60 + 45;
     setInterval(() => {
       darkroomSeconds = Math.max(0, darkroomSeconds - 1);
@@ -1127,17 +1888,17 @@
     }, 1000);
 
     // --------------------------------------------------------------------------
-    // 4. WEB AUDIO API MECHANICAL SOUND EFFECTS (NO EXTERNAL MP3 NEEDED)
+    // 7. WEB AUDIO API SYNTHESIZED MECHANICAL SOUNDS
     // --------------------------------------------------------------------------
     function getAudioCtx() {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!state.audioCtx && AudioContext) {
-        state.audioCtx = new AudioContext();
+      if (!appState.audioCtx && AudioContext) {
+        appState.audioCtx = new AudioContext();
       }
-      if (state.audioCtx && state.audioCtx.state === 'suspended') {
-        state.audioCtx.resume();
+      if (appState.audioCtx && appState.audioCtx.state === 'suspended') {
+        appState.audioCtx.resume();
       }
-      return state.audioCtx;
+      return appState.audioCtx;
     }
 
     function playCardboardTearTick(val) {

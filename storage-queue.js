@@ -548,30 +548,43 @@ const CRC_TABLE = (() => {
 function generateEventQRCodeSVG(text, size = 220, fg = '#1C1917', bg = '#FFFFFF') {
   const bytes = Array.from(new TextEncoder().encode(text));
 
-  // Version table for ECC Level L (single block up to Version 5, 2 blocks for Version 6)
+  // Version table for ECC Level L (Versions 1 to 10)
+  // blocks: [numBlocksGroup1, dataCwPerBlock1, numBlocksGroup2, dataCwPerBlock2]
   const VERSIONS = [
     null,
-    { v: 1, size: 21, dataCw: 19, ecCw: 7, blocks: 1, align: [] },
-    { v: 2, size: 25, dataCw: 34, ecCw: 10, blocks: 1, align: [6, 18] },
-    { v: 3, size: 29, dataCw: 55, ecCw: 15, blocks: 1, align: [6, 22] },
-    { v: 4, size: 33, dataCw: 80, ecCw: 20, blocks: 1, align: [6, 26] },
-    { v: 5, size: 37, dataCw: 108, ecCw: 26, blocks: 1, align: [6, 30] }
+    { v: 1, size: 21, totalData: 19, ecCwPerBlock: 7, blocks: [1, 19, 0, 0], align: [] },
+    { v: 2, size: 25, totalData: 34, ecCwPerBlock: 10, blocks: [1, 34, 0, 0], align: [6, 18] },
+    { v: 3, size: 29, totalData: 55, ecCwPerBlock: 15, blocks: [1, 55, 0, 0], align: [6, 22] },
+    { v: 4, size: 33, totalData: 80, ecCwPerBlock: 20, blocks: [1, 80, 0, 0], align: [6, 26] },
+    { v: 5, size: 37, totalData: 108, ecCwPerBlock: 26, blocks: [1, 108, 0, 0], align: [6, 30] },
+    { v: 6, size: 41, totalData: 136, ecCwPerBlock: 18, blocks: [2, 68, 0, 0], align: [6, 34] },
+    { v: 7, size: 45, totalData: 156, ecCwPerBlock: 20, blocks: [2, 78, 0, 0], align: [6, 22, 38] },
+    { v: 8, size: 49, totalData: 194, ecCwPerBlock: 24, blocks: [2, 97, 0, 0], align: [6, 24, 42] },
+    { v: 9, size: 53, totalData: 232, ecCwPerBlock: 30, blocks: [2, 116, 0, 0], align: [6, 26, 46] },
+    { v: 10, size: 57, totalData: 274, ecCwPerBlock: 18, blocks: [2, 68, 2, 69], align: [6, 28, 50] }
   ];
 
-  // Pick smallest version that fits (4-bit mode + 8-bit length + bytes)
-  let ver = VERSIONS.find((info) => info && bytes.length + 2 <= info.dataCw) || VERSIONS[5];
-  const payloadBytes = bytes.slice(0, ver.dataCw - 2);
+  // Version 1-9 use 8-bit length in Byte mode; Version 10+ uses 16-bit length
+  let ver = VERSIONS.find((info) => {
+    if (!info) return false;
+    const headerBytes = info.v >= 10 ? 3 : 2;
+    return bytes.length + headerBytes <= info.totalData;
+  }) || VERSIONS[10];
+
+  const countBits = ver.v >= 10 ? 16 : 8;
+  const maxPayload = ver.totalData - (ver.v >= 10 ? 3 : 2);
+  const payloadBytes = bytes.slice(0, maxPayload);
   const N = ver.size;
 
-  // Build bit stream: Mode 0100 (Byte), 8-bit count, data bytes, terminator, pad bytes
+  // Build bit stream: Mode 0100 (Byte), count, data bytes, terminator, pad bytes
   const bits = [];
   const pushBits = (val, len) => {
     for (let i = len - 1; i >= 0; i--) bits.push((val >>> i) & 1);
   };
   pushBits(0b0100, 4);
-  pushBits(payloadBytes.length, 8);
+  pushBits(payloadBytes.length, countBits);
   payloadBytes.forEach((b) => pushBits(b, 8));
-  const maxBits = ver.dataCw * 8;
+  const maxBits = ver.totalData * 8;
   pushBits(0, Math.min(4, maxBits - bits.length));
   while (bits.length % 8 !== 0) bits.push(0);
 
@@ -583,7 +596,7 @@ function generateEventQRCodeSVG(text, size = 220, fg = '#1C1917', bg = '#FFFFFF'
   }
   const pads = [0xec, 0x11];
   let padIdx = 0;
-  while (dataCodewords.length < ver.dataCw) {
+  while (dataCodewords.length < ver.totalData) {
     dataCodewords.push(pads[padIdx++ % 2]);
   }
 
@@ -600,9 +613,9 @@ function generateEventQRCodeSVG(text, size = 220, fg = '#1C1917', bg = '#FFFFFF'
   for (let i = 255; i < 512; i++) exp[i] = exp[i - 255];
   const gfMul = (a, b) => (a === 0 || b === 0 ? 0 : exp[log[a] + log[b]]);
 
-  // Generator polynomial of degree ecCw
+  // Generator polynomial of degree ecCwPerBlock
   let gen = [1];
-  for (let i = 0; i < ver.ecCw; i++) {
+  for (let i = 0; i < ver.ecCwPerBlock; i++) {
     const next = new Array(gen.length + 1).fill(0);
     for (let j = 0; j < gen.length; j++) {
       next[j] ^= gen[j];
@@ -611,21 +624,49 @@ function generateEventQRCodeSVG(text, size = 220, fg = '#1C1917', bg = '#FFFFFF'
     gen = next;
   }
 
-  const ecCodewords = new Array(ver.ecCw).fill(0);
-  for (const b of dataCodewords) {
-    const factor = b ^ ecCodewords[0];
-    ecCodewords.shift();
-    ecCodewords.push(0);
-    if (factor !== 0) {
-      for (let j = 0; j < ver.ecCw; j++) {
-        ecCodewords[j] ^= gfMul(gen[j + 1], factor);
+  // Split into blocks and compute Reed-Solomon EC for each block
+  const [g1Blocks, g1Len, g2Blocks, g2Len] = ver.blocks;
+  const dataBlocks = [];
+  const ecBlocks = [];
+  let offset = 0;
+
+  const processBlock = (len) => {
+    const block = dataCodewords.slice(offset, offset + len);
+    offset += len;
+    const ec = new Array(ver.ecCwPerBlock).fill(0);
+    for (const b of block) {
+      const factor = b ^ ec[0];
+      ec.shift();
+      ec.push(0);
+      if (factor !== 0) {
+        for (let j = 0; j < ver.ecCwPerBlock; j++) {
+          ec[j] ^= gfMul(gen[j + 1], factor);
+        }
       }
+    }
+    dataBlocks.push(block);
+    ecBlocks.push(ec);
+  };
+
+  for (let i = 0; i < g1Blocks; i++) processBlock(g1Len);
+  for (let i = 0; i < g2Blocks; i++) processBlock(g2Len);
+
+  // Interleave data codewords and EC codewords across blocks
+  const interleaved = [];
+  const maxDataBlockLen = Math.max(g1Len, g2Len);
+  for (let i = 0; i < maxDataBlockLen; i++) {
+    for (const b of dataBlocks) {
+      if (i < b.length) interleaved.push(b[i]);
+    }
+  }
+  for (let i = 0; i < ver.ecCwPerBlock; i++) {
+    for (const ec of ecBlocks) {
+      interleaved.push(ec[i]);
     }
   }
 
-  const allCodewords = [...dataCodewords, ...ecCodewords];
   const allBits = [];
-  for (const cw of allCodewords) {
+  for (const cw of interleaved) {
     for (let i = 7; i >= 0; i--) allBits.push((cw >>> i) & 1);
   }
 
