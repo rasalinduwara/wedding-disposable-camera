@@ -3,18 +3,1235 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>35mm Wedding Disposable Camera — Interactive v1 Prototype</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>GrainCam — 90s Disposable Camera</title>
+
+  <!-- Google Fonts: Archivo Black & VT323 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=VT323&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            funsaver: '#F2C94C',
+            matteBlack: '#1A1A1A',
+            cardboard: '#E8E3D9',
+            kraft: '#D6BE96',
+            lcdGreen: '#39FF14',
+            leakRed: '#FF3B30',
+          },
+          fontFamily: {
+            archivo: ['"Archivo Black"', 'sans-serif'],
+            vt323: ['"VT323"', 'monospace'],
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* ==========================================================================
+       GLOBAL & DESK SURFACE BACKGROUND
+       ========================================================================== */
+    * {
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    body {
+      background-color: #121212;
+      background-image:
+        radial-gradient(circle at 50% 35%, #242424 0%, #101010 75%),
+        radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+      background-size: 100% 100%, 24px 24px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ==========================================================================
+       SCREEN 1: 90s CARDBOARD BLISTER PACKAGING
+       ========================================================================== */
+    .blister-cardboard {
+      background:
+        radial-gradient(circle at 50% 45%, #E8E3D9 45%, #C9BEA9 100%);
+      box-shadow:
+        0 28px 60px rgba(0, 0, 0, 0.75),
+        inset 0 2px 3px rgba(255, 255, 255, 0.6),
+        inset 0 -3px 6px rgba(0, 0, 0, 0.25);
+    }
+
+    .kraft-panel {
+      background:
+        radial-gradient(circle at 50% 50%, #DFC8A2 0%, #C8AE82 100%);
+      box-shadow:
+        inset 0 3px 8px rgba(0, 0, 0, 0.12),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Retail Euro-Slot Peg Hanger Cutout */
+    .peg-cutout {
+      width: 96px;
+      height: 26px;
+      background: #141414;
+      border-radius: 999px;
+      position: relative;
+      box-shadow:
+        inset 0 4px 8px rgba(0, 0, 0, 0.9),
+        0 1px 0 rgba(255, 255, 255, 0.45);
+    }
+    .peg-cutout::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 22px;
+      background: #141414;
+      border-radius: 50% 50% 0 0;
+      box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.85);
+    }
+
+    /* Clear Thermoformed Plastic Blister Bubble */
+    .plastic-blister-bubble {
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.48) 0%,
+        rgba(255, 255, 255, 0.12) 38%,
+        rgba(255, 255, 255, 0.04) 65%,
+        rgba(255, 255, 255, 0.32) 100%
+      );
+      border: 2px solid rgba(255, 255, 255, 0.65);
+      box-shadow:
+        0 18px 30px rgba(65, 48, 24, 0.38),
+        0 3px 6px rgba(0, 0, 0, 0.2),
+        inset 0 4px 12px rgba(255, 255, 255, 0.85),
+        inset 0 -6px 14px rgba(0, 0, 0, 0.22);
+      backdrop-filter: blur(1px);
+      transform: rotate(-4deg);
+    }
+
+    /* Blister Inner Flange Rim */
+    .plastic-blister-rim {
+      border: 1.5px solid rgba(255, 255, 255, 0.55);
+      box-shadow:
+        inset 0 2px 5px rgba(0, 0, 0, 0.2),
+        0 2px 4px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Perforated Tear Line & Side Notches */
+    .perforation-line {
+      border-top: 3px dashed #5C5343;
+      position: relative;
+    }
+    .perforation-line::before,
+    .perforation-line::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      width: 22px;
+      height: 22px;
+      background: #141414;
+      border-radius: 50%;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
+    }
+    .perforation-line::before {
+      left: -13px;
+    }
+    .perforation-line::after {
+      right: -13px;
+    }
+
+    /* Tear-to-Open Slider Styling */
+    .tear-track {
+      background: linear-gradient(180deg, #C7B698 0%, #EFE6D5 100%);
+      box-shadow:
+        inset 0 3px 6px rgba(0, 0, 0, 0.35),
+        0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+
+    .tear-range-input {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 44px;
+      background: transparent;
+      cursor: grab;
+      position: relative;
+      z-index: 20;
+    }
+    .tear-range-input:active {
+      cursor: grabbing;
+    }
+    .tear-range-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 48px;
+      height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #E2C696 0%, #B89867 100%);
+      border: 2px solid #8A6D3B;
+      box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.7);
+    }
+    .tear-range-input::-moz-range-thumb {
+      width: 48px;
+      height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #E2C696 0%, #B89867 100%);
+      border: 2px solid #8A6D3B;
+      box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.7);
+    }
+
+    /* Packaging Tear Animation */
+    .tearing-away {
+      animation: ripOpenPackage 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes ripOpenPackage {
+      0% { transform: scale(1) rotate(0deg); opacity: 1; }
+      35% { transform: scale(1.03) rotate(-1.5deg); opacity: 1; }
+      100% { transform: translateY(-40px) scale(0.92) rotate(3deg); opacity: 0; pointer-events: none; }
+    }
+
+    /* ==========================================================================
+       SCREEN 2: SKEUOMORPHIC MATTE BLACK CAMERA BODY
+       ========================================================================== */
+    .camera-plastic-shell {
+      background-color: #1A1A1A;
+      background-image:
+        radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0),
+        linear-gradient(145deg, #232323 0%, #161616 55%, #111111 100%);
+      background-size: 5px 5px, 100% 100%;
+      box-shadow:
+        0 30px 65px rgba(0, 0, 0, 0.85),
+        inset 0 2px 3px rgba(255, 255, 255, 0.14),
+        inset 0 -4px 8px rgba(0, 0, 0, 0.85),
+        inset 2px 0 4px rgba(255, 255, 255, 0.05);
+      border: 2px solid #2A2A2A;
+    }
+
+    /* Outer Viewfinder Plastic Bezel */
+    .viewfinder-outer-bezel {
+      background: linear-gradient(145deg, #252525, #141414);
+      padding: 12px;
+      border-radius: 22px;
+      box-shadow:
+        0 6px 14px rgba(0, 0, 0, 0.75),
+        inset 0 1px 1px rgba(255, 255, 255, 0.12);
+      border: 1px solid #303030;
+    }
+
+    /* Deeply Recessed 4:3 Viewfinder Window */
+    .viewfinder-recessed {
+      aspect-ratio: 4 / 3;
+      background: #080808;
+      border-radius: 14px;
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        inset 0px 8px 15px rgba(0, 0, 0, 0.95),
+        inset 0px 0px 28px rgba(0, 0, 0, 0.85),
+        0 1px 0 rgba(255, 255, 255, 0.08);
+      border: 3px solid #111111;
+    }
+
+    /* Glass Lens Glare Overlay */
+    .viewfinder-glass-glare {
+      background: linear-gradient(
+        125deg,
+        rgba(255, 255, 255, 0.12) 0%,
+        rgba(255, 255, 255, 0.02) 32%,
+        transparent 50%
+      );
+      box-shadow: inset 0 8px 18px rgba(0, 0, 0, 0.9);
+      pointer-events: none;
+    }
+
+    /* Orange Quartz Date Stamp (VT323) */
+    .quartz-date-stamp {
+      color: #FF8C1A;
+      text-shadow:
+        0 0 6px rgba(255, 110, 0, 0.95),
+        0 0 14px rgba(255, 69, 0, 0.55);
+      letter-spacing: 0.08em;
+    }
+
+    /* Green Glowing Status LED */
+    .led-indicator {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #B8FF9E 0%, #39FF14 45%, #168005 100%);
+      box-shadow:
+        0 0 10px #39FF14,
+        0 0 20px rgba(57, 255, 20, 0.6),
+        inset 0 1px 2px rgba(255, 255, 255, 0.8);
+      border: 1.5px solid #112A0B;
+    }
+
+    /* Recessed Digital LCD Window */
+    .lcd-counter-window {
+      background: linear-gradient(180deg, #071207 0%, #0D1F0D 100%);
+      box-shadow:
+        inset 0 4px 8px rgba(0, 0, 0, 0.95),
+        inset 0 0 6px rgba(0, 0, 0, 0.8),
+        0 1px 0 rgba(255, 255, 255, 0.1);
+      border: 2px solid #262626;
+      border-radius: 8px;
+    }
+
+    .lcd-digits {
+      color: #39FF14;
+      text-shadow:
+        0 0 8px rgba(57, 255, 20, 0.85),
+        0 0 16px rgba(57, 255, 20, 0.35);
+    }
+
+    /* Recessed Pill Track for Physical Flash Switch */
+    .flash-pill-track {
+      width: 96px;
+      height: 40px;
+      background: #0E0E0E;
+      border-radius: 999px;
+      padding: 4px;
+      box-shadow:
+        inset 0 5px 10px rgba(0, 0, 0, 0.95),
+        0 1px 0 rgba(255, 255, 255, 0.1);
+      border: 2px solid #272727;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .flash-switch-knob {
+      width: 46px;
+      height: 28px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #4A4A4A 0%, #2B2B2B 100%);
+      box-shadow:
+        0 3px 6px rgba(0, 0, 0, 0.85),
+        inset 0 1px 1px rgba(255, 255, 255, 0.28);
+      border: 1px solid #555555;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+    }
+
+    .flash-pill-track.active .flash-switch-knob {
+      transform: translateX(38px);
+      background: linear-gradient(180deg, #5A5A5A 0%, #353535 100%);
+      border-color: #F2C94C;
+    }
+
+    /* Molded Plastic Bezel Housing Around Shutter Button */
+    .shutter-housing-bezel {
+      background: linear-gradient(145deg, #242424, #141414);
+      padding: 12px;
+      border-radius: 28px;
+      box-shadow:
+        0 10px 20px rgba(0, 0, 0, 0.8),
+        inset 0 2px 3px rgba(255, 255, 255, 0.08),
+        inset 0 -3px 6px rgba(0, 0, 0, 0.9);
+      border: 2px solid #2C2C2C;
+    }
+
+    /* Chunky FunSaver Yellow SHUTTER Button */
+    .chunky-shutter-btn {
+      background: linear-gradient(180deg, #FFE169 0%, #F2C94C 55%, #D9A726 100%);
+      color: #1A1A1A;
+      border-radius: 18px;
+      border: 2px solid #FFF0A8;
+      box-shadow:
+        6px 8px 0px #080808,
+        6px 12px 18px rgba(0, 0, 0, 0.75),
+        inset 0 2px 2px rgba(255, 255, 255, 0.75),
+        inset 0 -3px 4px rgba(158, 111, 0, 0.6);
+      transition: transform 0.06s ease, box-shadow 0.06s ease;
+      cursor: pointer;
+    }
+
+    .chunky-shutter-btn:active,
+    .chunky-shutter-btn.pressed {
+      transform: translate(6px, 8px);
+      box-shadow:
+        0px 0px 0px #080808,
+        0px 2px 4px rgba(0, 0, 0, 0.6),
+        inset 0 3px 6px rgba(120, 82, 0, 0.65);
+    }
+
+    /* Vertical Grooved Film-Advance Thumbwheel on Far Right Edge */
+    .thumbwheel-recess {
+      background: #0B0B0B;
+      border-radius: 14px 4px 4px 14px;
+      padding: 8px 0 8px 8px;
+      box-shadow:
+        inset 4px 0 10px rgba(0, 0, 0, 0.95),
+        inset 0 4px 8px rgba(0, 0, 0, 0.9),
+        0 1px 0 rgba(255, 255, 255, 0.08);
+      border: 1.5px solid #262626;
+      border-right: none;
+    }
+
+    .thumbwheel-cylinder {
+      width: 34px;
+      height: 118px;
+      border-radius: 6px 0 0 6px;
+      background-color: #2A2A2A;
+      background-image: repeating-linear-gradient(
+        180deg,
+        #444444 0px,
+        #444444 3px,
+        #151515 3px,
+        #151515 7px
+      );
+      box-shadow:
+        inset 4px 0 8px rgba(255, 255, 255, 0.14),
+        inset -4px 0 10px rgba(0, 0, 0, 0.9),
+        inset 0 16px 18px rgba(0, 0, 0, 0.75),
+        inset 0 -16px 18px rgba(0, 0, 0, 0.75);
+      border: 1px solid #3A3A3A;
+      cursor: ns-resize;
+      transition: background-position 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* ==========================================================================
+       SCREEN 3: DARKROOM ACTIVE (BONUS INTEGRATED SCREEN FROM DESIGN)
+       ========================================================================== */
+    .darkroom-shell {
+      background: linear-gradient(145deg, #5C1313 0%, #380909 60%, #260505 100%);
+      box-shadow:
+        0 30px 65px rgba(0, 0, 0, 0.88),
+        inset 0 2px 3px rgba(255, 120, 120, 0.22),
+        inset 0 -4px 10px rgba(0, 0, 0, 0.85);
+      border: 2px solid #751B1B;
+    }
+
+    .neon-red-text {
+      color: #FF3B30;
+      text-shadow:
+        0 0 8px rgba(255, 59, 48, 0.9),
+        0 0 20px rgba(255, 59, 48, 0.5);
+    }
+  </style>
 </head>
-<body>
-  <div id="app-root">
-    <div style="padding:3rem;text-align:center;font-family:Georgia,serif;color:#44403c;">
-      Loading 35mm Wedding Disposable Camera Prototype...
-    </div>
+
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+  <!-- Top Mode Bar so you can easily flip between Packaging, Camera, Darkroom & Gallery -->
+  <nav class="w-full max-w-[400px] mb-4 flex items-center justify-between bg-[#1C1C1C] border border-[#333] rounded-full px-2 py-1.5 shadow-lg text-xs font-vt323 tracking-wider text-gray-300">
+    <button id="nav-packaging" onclick="switchScreen('packaging')" class="px-3 py-1 rounded-full bg-funsaver text-matteBlack font-bold transition">
+      1. PACKAGING
+    </button>
+    <button id="nav-camera" onclick="switchScreen('camera')" class="px-3 py-1 rounded-full hover:text-white transition">
+      2. CAMERA [ <span id="nav-count">24</span> ]
+    </button>
+    <button id="nav-darkroom" onclick="switchScreen('darkroom')" class="px-3 py-1 rounded-full hover:text-white transition">
+      3. DARKROOM (<span id="nav-taken">0</span>)
+    </button>
+  </nav>
+
+  <!-- ==========================================================================
+       MOBILE-WIDTH CONTAINER (max-width: 400px)
+       ========================================================================== -->
+  <div class="w-full max-w-[400px] relative">
+
+    <!-- ========================================================================
+         SCREEN 1: THE "PACKAGING" ONBOARDING SCREEN (90s Blister Pack)
+         ======================================================================== -->
+    <section
+      id="screen-packaging"
+      class="blister-cardboard rounded-[28px] overflow-hidden flex flex-col justify-between border border-[#B5A890] transition-all duration-300"
+    >
+      <!-- Top Yellow Header Band with Retail Peg Cutout & 90s Badge -->
+      <div class="bg-funsaver pt-4 pb-3 px-5 relative border-b border-[#D5AC31]">
+        <div class="flex items-start justify-between">
+          <!-- Subtle Back Icon -->
+          <span class="font-vt323 text-2xl text-matteBlack/80 leading-none">←</span>
+
+          <!-- Retail Peg Hanger Hole -->
+          <div class="peg-cutout mt-1"></div>
+
+          <!-- 90s Corner Badge -->
+          <div class="text-right leading-none">
+            <div class="font-archivo text-xl text-matteBlack tracking-tight">90s</div>
+            <div class="font-vt323 text-[11px] text-matteBlack/80 tracking-widest">ISO 400</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cardboard White Banner with "PACKAGING" in Archivo Black -->
+      <div class="bg-cardboard py-4 px-5 text-center border-b border-[#CEC5B4] shadow-inner">
+        <h1 class="font-archivo text-[34px] leading-none tracking-tight text-matteBlack uppercase">
+          PACKAGING
+        </h1>
+      </div>
+
+      <!-- Center Kraft Area with Clear Plastic Blister Bubble & Camera Inside -->
+      <div class="kraft-panel py-8 px-6 flex items-center justify-center relative">
+        <!-- Clear Plastic Blister Bubble -->
+        <div class="plastic-blister-bubble rounded-[26px] p-3.5 w-full max-w-[310px]">
+          <div class="plastic-blister-rim rounded-[20px] p-4 bg-white/5 flex items-center justify-center">
+            
+            <!-- Detailed 90s Disposable Camera Body Inside the Blister -->
+            <div class="w-full aspect-[16/10] bg-[#262626] rounded-[18px] relative shadow-2xl border-2 border-[#3B3B3B] overflow-hidden flex items-center justify-center">
+              <!-- FunSaver Yellow & Red Diagonal Stripe Wrap -->
+              <div class="absolute inset-y-0 left-[22%] right-[26%] bg-funsaver transform -skew-x-12 border-x-4 border-leakRed shadow-inner"></div>
+              <div class="absolute top-0 left-[20%] right-[28%] h-7 bg-[#E8E3D9] transform -skew-x-12 border-b-2 border-leakRed"></div>
+
+              <!-- Viewfinder Window Top Center -->
+              <div class="absolute top-2.5 left-1/2 -translate-x-1/2 w-11 h-6 bg-[#151515] rounded border-2 border-[#3A3A3A] shadow-inner flex items-center justify-center">
+                <div class="w-5 h-3 bg-[#3A4A52] rounded-sm opacity-80"></div>
+              </div>
+
+              <!-- Built-in Xenon Flash Unit Top Right -->
+              <div class="absolute top-2.5 right-3 w-12 h-7 bg-gradient-to-b from-gray-100 to-gray-400 rounded border-2 border-[#1A1A1A] shadow-inner flex items-center justify-center">
+                <div class="w-9 h-4 border border-gray-500/60 bg-white/80 rounded-sm"></div>
+              </div>
+
+              <!-- Center Molded Plastic Lens Barrel -->
+              <div class="relative z-10 mt-3 w-20 h-20 rounded-full bg-gradient-to-br from-[#3B3B3B] to-[#141414] border-4 border-[#222] shadow-[0_8px_16px_rgba(0,0,0,0.85)] flex items-center justify-center">
+                <div class="w-12 h-12 rounded-full bg-[#0C0C0C] border-2 border-[#2E2E2E] flex items-center justify-center shadow-inner">
+                  <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-[#112233] via-[#2A527A] to-[#88CCFF]/40 border border-white/20"></div>
+                </div>
+              </div>
+
+              <!-- Textured Grip Dots on Right Side -->
+              <div class="absolute bottom-3 right-3.5 w-8 h-9 rounded-full bg-[#1C1C1C] border border-[#383838] grid grid-cols-2 gap-1 p-1.5 shadow-inner">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#333]"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-[#333]"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-[#333]"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-[#333]"></span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Area: Massive "GrainCam" Logo on FunSaver Yellow -->
+      <div class="bg-funsaver pt-4 pb-5 px-5 text-center border-t border-[#F7DA74]">
+        <h2
+          class="font-archivo text-[48px] leading-none tracking-tight text-matteBlack select-none"
+          style="text-shadow: 0 3px 0 rgba(255,255,255,0.45), 3px 4px 0px rgba(26,26,26,0.18);"
+        >
+          GrainCam
+        </h2>
+      </div>
+
+      <!-- Perforated Dashed Line & "TEAR TO OPEN" Horizontal Slider -->
+      <div class="perforation-line bg-[#DEC79E] px-5 pt-4 pb-5">
+        <div class="tear-track rounded-xl h-11 relative flex items-center px-1.5 overflow-hidden">
+          <!-- Fill Progress Strip as User Tears -->
+          <div
+            id="tear-progress-fill"
+            class="absolute inset-y-0 left-0 bg-gradient-to-r from-[#1A1A1A] to-[#332B1E] opacity-80 pointer-events-none transition-none"
+            style="width: 0%;"
+          ></div>
+
+          <!-- Centered Label -->
+          <span
+            id="tear-label-text"
+            class="w-full text-center font-archivo text-xs tracking-wider text-matteBlack uppercase pointer-events-none z-10"
+          >
+            TEAR TO OPEN &rarr;
+          </span>
+
+          <!-- Range Input Slider -->
+          <input
+            id="tear-slider"
+            type="range"
+            min="0"
+            max="100"
+            value="0"
+            aria-label="Tear to open camera packaging"
+            class="tear-range-input"
+          />
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================
+         SCREEN 2: THE MAIN CAMERA INTERFACE (Skeuomorphic Matte Black)
+         ======================================================================== -->
+    <section
+      id="screen-camera"
+      class="camera-plastic-shell rounded-[32px] p-5 hidden flex-col justify-between relative"
+    >
+      <!-- Xenon Flash Screen Burst Overlay -->
+      <div
+        id="flash-burst-overlay"
+        class="fixed inset-0 bg-white pointer-events-none opacity-0 transition-opacity duration-75 z-50"
+      ></div>
+
+      <!-- TOP ZONE: 4:3 Deeply Recessed Viewfinder -->
+      <div class="viewfinder-outer-bezel">
+        <div class="viewfinder-recessed">
+          <!-- Live Webcam Feed -->
+          <video
+            id="camera-video"
+            autoplay
+            playsinline
+            muted
+            class="w-full h-full object-cover"
+            style="filter: contrast(1.08) saturate(1.18) sepia(0.14);"
+          ></video>
+
+          <!-- Fallback Atmospheric 90s Film Preview (shown if webcam not active/denied) -->
+          <canvas
+            id="fallback-viewfinder-canvas"
+            width="640"
+            height="480"
+            class="w-full h-full object-cover hidden"
+          ></canvas>
+
+          <!-- Subtle 90s Light Leak & Lens Glare Overlay -->
+          <div class="viewfinder-glass-glare absolute inset-0"></div>
+
+          <!-- Camera Flip Button (Top Left Corner inside Viewfinder) -->
+          <button
+            id="flip-camera-btn"
+            onclick="flipWebcam()"
+            title="Switch Front / Rear Camera"
+            class="absolute top-2.5 left-2.5 bg-black/55 hover:bg-black/80 text-white/80 font-vt323 text-sm px-2.5 py-0.5 rounded border border-white/15 backdrop-blur-sm transition"
+          >
+            [ FLIP CAM ]
+          </button>
+
+          <!-- Bottom-Right Orange Quartz Date Stamp (VT323) -->
+          <div
+            id="viewfinder-date-stamp"
+            class="quartz-date-stamp absolute bottom-2.5 right-3.5 font-vt323 text-2xl leading-none select-none pointer-events-none"
+          >
+            08.11.2026
+          </div>
+        </div>
+      </div>
+
+      <!-- MIDDLE ZONE: Status Panel (LED + Recessed Neon Green LCD Counter + Sliding Flash Toggle) -->
+      <div class="my-6 px-3 flex items-center justify-between">
+        <!-- Left: Glowing Green LED + Recessed [ 24 ] LCD Window -->
+        <div class="flex items-center gap-3.5">
+          <div id="ready-led" class="led-indicator" title="Flash & Shutter Ready"></div>
+
+          <div class="lcd-counter-window px-3.5 py-1 min-w-[74px] text-center">
+            <span
+              id="lcd-shot-counter"
+              class="lcd-digits font-vt323 text-4xl leading-none tracking-widest"
+            >
+              24
+            </span>
+          </div>
+        </div>
+
+        <!-- Right: Physical Sliding Flash Toggle Switch in Recessed Pill Track -->
+        <div class="flex flex-col items-center">
+          <div
+            id="flash-toggle-track"
+            onclick="toggleFlashSwitch()"
+            role="switch"
+            aria-checked="true"
+            tabindex="0"
+            class="flash-pill-track active"
+            title="Slide to Toggle Flash"
+          >
+            <div class="flash-switch-knob">
+              <span class="w-[2px] h-3.5 bg-gray-400/70 rounded-full"></span>
+              <span class="w-[2px] h-3.5 bg-gray-400/70 rounded-full"></span>
+              <span class="w-[2px] h-3.5 bg-gray-400/70 rounded-full"></span>
+            </div>
+          </div>
+          <span class="font-vt323 text-xs text-gray-400 tracking-widest mt-1">
+            ◄ FLASH <span id="flash-state-text" class="text-funsaver">ON</span> ►
+          </span>
+        </div>
+      </div>
+
+      <!-- BOTTOM ZONE: Chunky Yellow SHUTTER Button + Vertical Grooved Film-Advance Thumbwheel -->
+      <div class="pt-1 pb-3 flex items-center justify-between relative">
+        <!-- Left Spacer for Visual Balance -->
+        <div class="w-8 flex flex-col items-center justify-center">
+          <span id="wind-status-hint" class="font-vt323 text-xs text-gray-500 uppercase tracking-wider -rotate-90 whitespace-nowrap">
+            READY
+          </span>
+        </div>
+
+        <!-- Center: Molded Housing + Chunky FunSaver Yellow SHUTTER Button -->
+        <div class="shutter-housing-bezel">
+          <button
+            id="shutter-btn"
+            onclick="fireShutter()"
+            class="chunky-shutter-btn w-40 h-32 flex items-center justify-center"
+          >
+            <span class="font-archivo text-2xl tracking-tight text-matteBlack uppercase">
+              SHUTTER
+            </span>
+          </button>
+        </div>
+
+        <!-- Far Right Edge: Vertical Grooved Thumbwheel -->
+        <div class="thumbwheel-recess -mr-5 flex items-center">
+          <div
+            id="film-thumbwheel"
+            onclick="windFilmWheel()"
+            title="Click or Drag to Wind Film Thumbwheel"
+            class="thumbwheel-cylinder"
+            style="background-position: 0px 0px;"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Bottom Micro Status Strip -->
+      <div class="mt-2 pt-2 border-t border-white/5 flex items-center justify-between font-vt323 text-sm text-gray-400 px-1">
+        <span id="camera-status-msg">GRAINCAM 400 · POINT & SHOOT</span>
+        <button
+          onclick="switchScreen('darkroom')"
+          class="text-funsaver hover:underline tracking-wider"
+        >
+          DARKROOM (<span id="taken-pill-count">0</span>) &rarr;
+        </button>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================
+         SCREEN 3: DARKROOM ACTIVE & DEVELOPED FILM GALLERY
+         ======================================================================== -->
+    <section
+      id="screen-darkroom"
+      class="darkroom-shell rounded-[32px] p-5 hidden flex-col justify-between text-white"
+    >
+      <!-- Recessed Darkroom Window -->
+      <div class="bg-[#180404] border-4 border-[#2D0707] rounded-2xl p-5 shadow-[inset_0_10px_25px_rgba(0,0,0,0.95)] text-center relative overflow-hidden">
+        <div class="font-vt323 text-4xl leading-none tracking-widest neon-red-text uppercase mb-3">
+          DARKROOM<br/>ACTIVE
+        </div>
+
+        <!-- Developing Tray Illustration -->
+        <div class="mx-auto my-3 w-48 h-32 rounded-xl bg-gradient-to-b from-[#4A0B0B] to-[#240404] border-2 border-[#8B1E1E] shadow-inner flex flex-col items-center justify-center relative">
+          <!-- 35mm Canister inside Red Safe-Light Bath -->
+          <div class="w-24 h-12 rounded-md bg-gradient-to-r from-[#222] via-[#D97706] to-[#222] border-2 border-black shadow-lg transform -rotate-12 flex items-center justify-center">
+            <span class="font-archivo text-[10px] text-black bg-funsaver px-1.5 py-0.5 rounded">400</span>
+          </div>
+          <span class="font-vt323 text-xs text-red-300/80 mt-2">
+            <span id="darkroom-photo-count">0</span> EXPOSURES ON ROLL
+          </span>
+          <span class="quartz-date-stamp absolute bottom-1.5 right-2.5 font-vt323 text-lg">
+            08.11.2026
+          </span>
+        </div>
+      </div>
+
+      <!-- VCR OSD Mono Countdown Timer Window -->
+      <div class="my-5 bg-[#161616] border-4 border-[#3E0D0D] rounded-xl py-3 px-4 text-center shadow-[inset_0_6px_14px_rgba(0,0,0,0.95)]">
+        <div id="darkroom-timer" class="font-vt323 text-5xl tracking-widest text-gray-100 leading-none">
+          14:23:45
+        </div>
+      </div>
+
+      <!-- Action Buttons matching Reference Image -->
+      <div class="flex flex-col gap-3">
+        <button
+          onclick="loadNewRoll()"
+          class="chunky-shutter-btn w-full py-3.5 rounded-xl font-archivo text-lg tracking-wide text-matteBlack uppercase"
+        >
+          LOAD NEW ROLL
+        </button>
+
+        <button
+          onclick="toggleDevelopedGallery()"
+          class="w-full py-3 rounded-xl bg-[#2E0808] hover:bg-[#3D0B0B] border border-[#6E1919] font-archivo text-sm tracking-wider text-red-200/90 uppercase shadow-inner transition"
+        >
+          VIEW GALLERY (<span id="gallery-btn-count">0</span>)
+        </button>
+      </div>
+
+      <!-- Developed 35mm Film Strip Gallery Drawer -->
+      <div id="developed-gallery-drawer" class="mt-4 pt-4 border-t border-red-900/50 hidden">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-vt323 text-lg text-funsaver">DEVELOPED 35MM PRINTS</span>
+          <button
+            onclick="downloadAllPrints()"
+            class="font-vt323 text-sm bg-funsaver text-matteBlack px-2.5 py-0.5 rounded font-bold"
+          >
+            ⬇ SAVE ALL
+          </button>
+        </div>
+        <div id="gallery-grid" class="grid grid-cols-2 gap-2.5 max-h-64 overflow-y-auto pr-1"></div>
+      </div>
+    </section>
+
   </div>
 
-  <script src="storage-queue.js"></script>
-  <script src="camera-engine.js"></script>
-  <script src="app.js"></script>
+  <!-- ==========================================================================
+       VANILLA JAVASCRIPT: TEAR SLIDER, WEBCAM, AUDIO SYNTH & 90s FILM DEVELOPER
+       ========================================================================== -->
+  <script>
+    const state = {
+      currentScreen: 'packaging',
+      shotsRemaining: 24,
+      flashOn: true,
+      facingMode: 'environment',
+      stream: null,
+      wheelOffset: 0,
+      photos: [],
+      audioCtx: null
+    };
+
+    // Format today's date as DD.MM.YYYY for the VT323 Quartz Date Stamp
+    function getFormattedDateStamp() {
+      const now = new Date();
+      const dd = String(now.getDate()).padStart(2, '0');
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const yyyy = now.getFullYear();
+      return `${dd}.${mm}.${yyyy}`;
+    }
+
+    document.getElementById('viewfinder-date-stamp').textContent = getFormattedDateStamp();
+
+    // --------------------------------------------------------------------------
+    // 1. PACKAGING "TEAR TO OPEN" SLIDER INTERACTION
+    // --------------------------------------------------------------------------
+    const tearSlider = document.getElementById('tear-slider');
+    const tearFill = document.getElementById('tear-progress-fill');
+    const tearLabel = document.getElementById('tear-label-text');
+    const packagingScreen = document.getElementById('screen-packaging');
+
+    tearSlider.addEventListener('input', (e) => {
+      const val = Number(e.target.value);
+      tearFill.style.width = `${val}%`;
+
+      if (val > 15) {
+        playCardboardTearTick(val);
+      }
+
+      if (val >= 92) {
+        tearSlider.disabled = true;
+        tearLabel.textContent = 'RIPPING OPEN...';
+        tearLabel.classList.add('text-funsaver');
+        playTearOpenSound();
+
+        packagingScreen.classList.add('tearing-away');
+        setTimeout(() => {
+          packagingScreen.classList.remove('tearing-away');
+          tearSlider.value = 0;
+          tearSlider.disabled = false;
+          tearFill.style.width = '0%';
+          tearLabel.textContent = 'TEAR TO OPEN →';
+          tearLabel.classList.remove('text-funsaver');
+          switchScreen('camera');
+        }, 520);
+      }
+    });
+
+    tearSlider.addEventListener('change', (e) => {
+      if (Number(e.target.value) < 92) {
+        // Snap back if not torn all the way across
+        tearSlider.value = 0;
+        tearFill.style.width = '0%';
+      }
+    });
+
+    // --------------------------------------------------------------------------
+    // 2. SCREEN NAVIGATION & WEBCAM STREAM MANAGEMENT
+    // --------------------------------------------------------------------------
+    function switchScreen(screenName) {
+      state.currentScreen = screenName;
+
+      const screens = ['packaging', 'camera', 'darkroom'];
+      screens.forEach((s) => {
+        const el = document.getElementById(`screen-${s}`);
+        const navBtn = document.getElementById(`nav-${s}`);
+        if (s === screenName) {
+          el.classList.remove('hidden');
+          el.classList.add('flex');
+          navBtn.classList.add('bg-funsaver', 'text-matteBlack', 'font-bold');
+        } else {
+          el.classList.add('hidden');
+          el.classList.remove('flex');
+          navBtn.classList.remove('bg-funsaver', 'text-matteBlack', 'font-bold');
+        }
+      });
+
+      if (screenName === 'camera') {
+        startWebcam();
+      } else {
+        stopWebcam();
+      }
+    }
+
+    async function startWebcam() {
+      const video = document.getElementById('camera-video');
+      const fallbackCanvas = document.getElementById('fallback-viewfinder-canvas');
+
+      stopWebcam();
+
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        try {
+          state.stream = await navigator.mediaDevices.getUserMedia({
+            audio: false,
+            video: {
+              facingMode: { ideal: state.facingMode },
+              width: { ideal: 1280 },
+              height: { ideal: 960 }
+            }
+          });
+          video.srcObject = state.stream;
+          video.classList.remove('hidden');
+          fallbackCanvas.classList.add('hidden');
+          await video.play();
+          return;
+        } catch (err) {
+          // Fall back to atmospheric 90s viewfinder canvas if no webcam or permission denied
+        }
+      }
+
+      video.classList.add('hidden');
+      fallbackCanvas.classList.remove('hidden');
+      drawFallbackViewfinderScene();
+    }
+
+    function stopWebcam() {
+      if (state.stream) {
+        state.stream.getTracks().forEach((t) => t.stop());
+        state.stream = null;
+      }
+    }
+
+    function flipWebcam() {
+      state.facingMode = state.facingMode === 'environment' ? 'user' : 'environment';
+      startWebcam();
+    }
+
+    // Draws a moody 90s coastal/silhouette scene (matching the mockup viewfinder) when no webcam is active
+    function drawFallbackViewfinderScene() {
+      const canvas = document.getElementById('fallback-viewfinder-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+
+      // Overcast nostalgic sky & sea gradient
+      const sky = ctx.createLinearGradient(0, 0, 0, h);
+      sky.addColorStop(0, '#D8D4CD');
+      sky.addColorStop(0.52, '#E5C69B');
+      sky.addColorStop(0.55, '#6E7880');
+      sky.addColorStop(1, '#2B3034');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, w, h);
+
+      // Distant pier & horizon
+      ctx.fillStyle = '#3A3532';
+      ctx.fillRect(0, h * 0.52, w * 0.65, 6);
+
+      // Right vertical window/beam pillar
+      ctx.fillStyle = '#1E1A17';
+      ctx.fillRect(w * 0.78, 0, w * 0.08, h);
+
+      // Subject silhouette taking a photo in center
+      ctx.fillStyle = '#1C1917';
+      ctx.beginPath();
+      ctx.arc(w * 0.48, h * 0.46, 36, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(w * 0.35, h);
+      ctx.quadraticCurveTo(w * 0.48, h * 0.52, w * 0.62, h);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // --------------------------------------------------------------------------
+    // 3. PHYSICAL FLASH SLIDER SWITCH, THUMBWHEEL & CHUNKY SHUTTER
+    // --------------------------------------------------------------------------
+    function toggleFlashSwitch() {
+      state.flashOn = !state.flashOn;
+      const track = document.getElementById('flash-toggle-track');
+      const label = document.getElementById('flash-state-text');
+      const led = document.getElementById('ready-led');
+
+      track.classList.toggle('active', state.flashOn);
+      track.setAttribute('aria-checked', String(state.flashOn));
+      label.textContent = state.flashOn ? 'ON' : 'OFF';
+
+      if (state.flashOn) {
+        led.style.opacity = '1';
+      } else {
+        led.style.opacity = '0.35';
+      }
+      playSwitchClickSound();
+    }
+
+    function windFilmWheel() {
+      state.wheelOffset -= 28;
+      const wheel = document.getElementById('film-thumbwheel');
+      wheel.style.backgroundPosition = `0px ${state.wheelOffset}px`;
+      playThumbwheelRatchetSound();
+    }
+
+    function fireShutter() {
+      if (state.shotsRemaining <= 0) {
+        switchScreen('darkroom');
+        return;
+      }
+
+      // 1. Trigger Flash Burst if Flash is ON
+      if (state.flashOn) {
+        const burst = document.getElementById('flash-burst-overlay');
+        burst.style.opacity = '0.95';
+        setTimeout(() => {
+          burst.style.opacity = '0';
+        }, 110);
+      }
+
+      // 2. Play mechanical shutter snap + automatic thumbwheel ratchet wind
+      playShutterAndWindAudio();
+      windFilmWheel();
+
+      // 3. Capture & Develop 90s Film Frame
+      capture90sFilmPhoto();
+
+      // 4. Decrement Neon Green LCD Shot Counter
+      state.shotsRemaining = Math.max(0, state.shotsRemaining - 1);
+      const formattedCount = String(state.shotsRemaining).padStart(2, '0');
+      document.getElementById('lcd-shot-counter').textContent = formattedCount;
+      document.getElementById('nav-count').textContent = formattedCount;
+
+      const statusMsg = document.getElementById('camera-status-msg');
+      statusMsg.textContent =
+        state.shotsRemaining > 0
+          ? `EXPOSURE SAVED · ${state.shotsRemaining} LEFT ON ROLL`
+          : 'ROLL FINISHED! OPENING DARKROOM...';
+
+      if (state.shotsRemaining === 0) {
+        setTimeout(() => switchScreen('darkroom'), 900);
+      }
+    }
+
+    // Captures current webcam frame (or fallback scene) with 90s grain, vignette, light leak & VT323 date stamp
+    function capture90sFilmPhoto() {
+      const video = document.getElementById('camera-video');
+      const fallbackCanvas = document.getElementById('fallback-viewfinder-canvas');
+
+      const out = document.createElement('canvas');
+      out.width = 800;
+      out.height = 600;
+      const ctx = out.getContext('2d');
+
+      if (state.stream && !video.classList.contains('hidden') && video.videoWidth > 0) {
+        ctx.drawImage(video, 0, 0, out.width, out.height);
+      } else {
+        drawFallbackViewfinderScene();
+        ctx.drawImage(fallbackCanvas, 0, 0, out.width, out.height);
+      }
+
+      // Warm FunSaver 400 color cast
+      ctx.fillStyle = 'rgba(242, 201, 76, 0.08)';
+      ctx.fillRect(0, 0, out.width, out.height);
+
+      // Disposable plastic lens vignette
+      const vig = ctx.createRadialGradient(400, 300, 180, 400, 300, 520);
+      vig.addColorStop(0, 'rgba(0,0,0,0)');
+      vig.addColorStop(1, 'rgba(10,8,6,0.58)');
+      ctx.fillStyle = vig;
+      ctx.fillRect(0, 0, out.width, out.height);
+
+      // Subtle Light Leak Red (#FF3B30) on left edge
+      const leak = ctx.createLinearGradient(0, 0, 190, 0);
+      leak.addColorStop(0, 'rgba(255, 59, 48, 0.28)');
+      leak.addColorStop(1, 'rgba(255, 59, 48, 0)');
+      ctx.fillStyle = leak;
+      ctx.fillRect(0, 0, out.width, out.height);
+
+      // Orange VT323 Date Stamp in bottom-right corner
+      ctx.save();
+      ctx.font = 'bold 34px "VT323", monospace';
+      ctx.textAlign = 'right';
+      ctx.shadowColor = 'rgba(255, 90, 0, 0.9)';
+      ctx.shadowBlur = 8;
+      ctx.fillStyle = '#FF8C1A';
+      ctx.fillText(getFormattedDateStamp(), out.width - 28, out.height - 22);
+      ctx.restore();
+
+      const dataUrl = out.toDataURL('image/jpeg', 0.88);
+      state.photos.unshift({
+        id: Date.now(),
+        frame: 24 - state.shotsRemaining + 1,
+        dataUrl
+      });
+
+      updateGalleryCounters();
+    }
+
+    function updateGalleryCounters() {
+      const count = state.photos.length;
+      document.getElementById('nav-taken').textContent = count;
+      document.getElementById('taken-pill-count').textContent = count;
+      document.getElementById('darkroom-photo-count').textContent = count;
+      document.getElementById('gallery-btn-count').textContent = count;
+
+      const grid = document.getElementById('gallery-grid');
+      grid.innerHTML = state.photos
+        .map(
+          (p) => `
+          <div class="bg-black p-1.5 rounded border border-red-900/60">
+            <div class="flex justify-between font-vt323 text-xs text-funsaver mb-1">
+              <span>EXP #${p.frame}</span>
+              <a href="${p.dataUrl}" download="GrainCam_Frame_${p.frame}.jpg" class="hover:underline">SAVE</a>
+            </div>
+            <img src="${p.dataUrl}" alt="Frame ${p.frame}" class="w-full aspect-[4/3] object-cover rounded-sm" />
+          </div>
+        `
+        )
+        .join('');
+    }
+
+    function toggleDevelopedGallery() {
+      const drawer = document.getElementById('developed-gallery-drawer');
+      drawer.classList.toggle('hidden');
+    }
+
+    function loadNewRoll() {
+      state.shotsRemaining = 24;
+      document.getElementById('lcd-shot-counter').textContent = '24';
+      document.getElementById('nav-count').textContent = '24';
+      switchScreen('packaging');
+    }
+
+    function downloadAllPrints() {
+      state.photos.forEach((p) => {
+        const a = document.createElement('a');
+        a.href = p.dataUrl;
+        a.download = `GrainCam_Frame_${p.frame}.jpg`;
+        a.click();
+      });
+    }
+
+    // Live Darkroom VCR OSD Mono Countdown Clock
+    let darkroomSeconds = 14 * 3600 + 23 * 60 + 45;
+    setInterval(() => {
+      darkroomSeconds = Math.max(0, darkroomSeconds - 1);
+      const hrs = String(Math.floor(darkroomSeconds / 3600)).padStart(2, '0');
+      const mins = String(Math.floor((darkroomSeconds % 3600) / 60)).padStart(2, '0');
+      const secs = String(darkroomSeconds % 60).padStart(2, '0');
+      const el = document.getElementById('darkroom-timer');
+      if (el) el.textContent = `${hrs}:${mins}:${secs}`;
+    }, 1000);
+
+    // --------------------------------------------------------------------------
+    // 4. WEB AUDIO API MECHANICAL SOUND EFFECTS (NO EXTERNAL MP3 NEEDED)
+    // --------------------------------------------------------------------------
+    function getAudioCtx() {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!state.audioCtx && AudioContext) {
+        state.audioCtx = new AudioContext();
+      }
+      if (state.audioCtx && state.audioCtx.state === 'suspended') {
+        state.audioCtx.resume();
+      }
+      return state.audioCtx;
+    }
+
+    function playCardboardTearTick(val) {
+      if (val % 8 !== 0) return;
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(180 + val * 2, ctx.currentTime);
+      gain.gain.setValueAtTime(0.04, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.02);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.02);
+    }
+
+    function playTearOpenSound() {
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      const bufferSize = ctx.sampleRate * 0.28;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+      }
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(900, ctx.currentTime);
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.35, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.27);
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      noise.start();
+    }
+
+    function playSwitchClickSound() {
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(1400, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.025);
+      gain.gain.setValueAtTime(0.25, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.025);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.026);
+    }
+
+    function playThumbwheelRatchetSound() {
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      [0, 0.045, 0.09, 0.14, 0.19].forEach((offset, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(950 + i * 60, now + offset);
+        osc.frequency.exponentialRampToValueAtTime(280, now + offset + 0.02);
+        gain.gain.setValueAtTime(0.16, now + offset);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.022);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + offset);
+        osc.stop(now + offset + 0.024);
+      });
+    }
+
+    function playShutterAndWindAudio() {
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const buf = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < data.length; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.01));
+      }
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.8, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+      src.connect(gain);
+      gain.connect(ctx.destination);
+      src.start(now);
+    }
+  </script>
 </body>
 </html>
