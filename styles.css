@@ -1,0 +1,761 @@
+/* ==========================================================================
+   Wedding Disposable Camera App — Stylesheet
+   Editorial Wedding Host Portal + Tactile 35mm Disposable Camera Hardware UI
+   ========================================================================== */
+
+:root {
+  --bg-cream: #faf6f0;
+  --bg-card: #ffffff;
+  --bg-subtle: #f2ebe1;
+  --ink-900: #1c1917;
+  --ink-700: #44403c;
+  --ink-500: #78716c;
+  --border-warm: #e5dec9;
+  --accent-terracotta: #9a472c;
+  --accent-terracotta-hover: #7f3720;
+  --accent-gold: #d99b26;
+  --success-green: #2a6f4e;
+  --warn-amber: #b45309;
+  --danger-red: #b91c1c;
+  --font-serif: Georgia, 'Times New Roman', serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'Courier New', Courier, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-cream);
+  color: var(--ink-900);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Prototype Interactive Control Bar (Top Switcher) */
+.proto-topbar {
+  background: #171412;
+  color: #f5efe6;
+  padding: 0.6rem 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid #332d29;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  font-size: 0.85rem;
+}
+
+.proto-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.proto-brand-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.8);
+}
+
+.proto-nav-pills {
+  display: flex;
+  background: #27221f;
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid #3c3530;
+}
+
+.proto-pill {
+  background: transparent;
+  color: #cbbba8;
+  border: none;
+  padding: 0.38rem 0.95rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.proto-pill:hover {
+  color: #ffffff;
+}
+
+.proto-pill.active {
+  background: var(--accent-terracotta);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.proto-sim-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sim-select {
+  background: #27221f;
+  color: #f5efe6;
+  border: 1px solid #49403a;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+/* Main Layout Container */
+.app-container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 1.75rem 1.25rem 4rem;
+}
+
+/* Typography & Editorial Headers */
+.editorial-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border-warm);
+}
+
+.editorial-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.74rem;
+  color: var(--accent-terracotta);
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.editorial-title {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--ink-900);
+  line-height: 1.15;
+}
+
+.editorial-subtitle {
+  color: var(--ink-500);
+  font-size: 0.95rem;
+  margin-top: 0.25rem;
+}
+
+/* Cards & Grid */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-warm);
+  border-radius: 14px;
+  padding: 1.35rem;
+  box-shadow: 0 2px 10px rgba(28, 25, 23, 0.03);
+}
+
+.card-title {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  margin-bottom: 0.35rem;
+  color: var(--ink-900);
+}
+
+.card-desc {
+  font-size: 0.86rem;
+  color: var(--ink-500);
+  margin-bottom: 1rem;
+}
+
+/* Stat Metric Cards (H-05) */
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-warm);
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+}
+
+.stat-label {
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-500);
+  font-weight: 600;
+}
+
+.stat-value {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  color: var(--ink-900);
+  margin: 0.2rem 0;
+}
+
+.stat-meta {
+  font-size: 0.8rem;
+  color: var(--ink-500);
+}
+
+/* Sub-navigation Tabs for Host */
+.host-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-warm);
+  padding-bottom: 0.75rem;
+  overflow-x: auto;
+}
+
+.host-tab {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink-700);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.host-tab:hover {
+  background: var(--bg-subtle);
+}
+
+.host-tab.active {
+  background: var(--ink-900);
+  color: #ffffff;
+}
+
+/* Forms & Inputs */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--ink-700);
+  margin-bottom: 0.35rem;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 0.62rem 0.8rem;
+  border: 1px solid #d6cbb9;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  background: #fffcf8;
+  color: var(--ink-900);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.62rem 1.15rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--accent-terracotta);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: var(--accent-terracotta-hover);
+}
+
+.btn-secondary {
+  background: var(--bg-subtle);
+  color: var(--ink-900);
+  border-color: #d6cbb9;
+}
+
+.btn-secondary:hover {
+  background: #e6dec8;
+}
+
+.btn-dark {
+  background: var(--ink-900);
+  color: #ffffff;
+}
+
+.btn-sm {
+  padding: 0.38rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.22rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-locked {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.badge-unlocked {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.badge-film {
+  background: #27221f;
+  color: #f59e0b;
+}
+
+/* ==========================================================================
+   GUEST DISPOSABLE CAMERA HARDWARE UI (PRD Section 6.3 & Goal G4)
+   ========================================================================== */
+
+.guest-shell {
+  max-width: 430px;
+  margin: 0 auto;
+}
+
+.camera-body {
+  background: linear-gradient(145deg, #24211f 0%, #151312 100%);
+  border: 3px solid #35302c;
+  border-radius: 28px;
+  padding: 1.15rem;
+  color: #f5efe6;
+  box-shadow:
+    0 22px 45px rgba(0, 0, 0, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Pebble leatherette grip texture overlay */
+.camera-body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0);
+  background-size: 6px 6px;
+  pointer-events: none;
+}
+
+/* Decorative Cardboard Film Label Wrapper Strip */
+.camera-label-strip {
+  background: linear-gradient(90deg, #8c4a32 0%, #b86b35 50%, #8c4a32 100%);
+  border-radius: 12px;
+  padding: 0.55rem 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.85rem;
+  border: 1px solid rgba(255, 235, 200, 0.28);
+  position: relative;
+  z-index: 2;
+}
+
+.camera-event-title {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff9f0;
+  letter-spacing: 0.01em;
+}
+
+.camera-stock-pill {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: #181412;
+  color: #fbbf24;
+  padding: 0.18rem 0.5rem;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+}
+
+/* Top Hardware Bar: Flash Ready LED, Mechanical Frame Counter Wheel, Audio/Flip */
+.camera-top-deck {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+  position: relative;
+  z-index: 2;
+}
+
+.frame-counter-window {
+  background: #0d0c0b;
+  border: 2px solid #443e39;
+  border-radius: 8px;
+  padding: 0.3rem 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.9);
+}
+
+.frame-counter-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #a89f91;
+}
+
+.frame-counter-digits {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fbbf24;
+  text-shadow: 0 0 6px rgba(251, 191, 36, 0.5);
+  min-width: 2ch;
+  text-align: right;
+}
+
+.hardware-toggles {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.hw-btn {
+  background: #2b2724;
+  color: #e7dfd5;
+  border: 1px solid #47403b;
+  border-radius: 8px;
+  padding: 0.42rem 0.65rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.hw-btn.active {
+  background: #42331b;
+  border-color: #f59e0b;
+  color: #fbbf24;
+}
+
+/* Optical Viewfinder Window */
+.viewfinder-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: #090808;
+  border-radius: 16px;
+  border: 4px solid #2e2926;
+  overflow: hidden;
+  box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.85);
+  margin-bottom: 1rem;
+  z-index: 2;
+}
+
+.viewfinder-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.viewfinder-video.mirrored {
+  transform: scaleX(-1);
+}
+
+/* Viewfinder framelines & center reticle */
+.viewfinder-overlay {
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(255, 250, 240, 0.32);
+  border-radius: 8px;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewfinder-crosshair {
+  width: 24px;
+  height: 24px;
+  border: 1.5px solid rgba(255, 250, 240, 0.45);
+  border-radius: 50%;
+}
+
+.viewfinder-date-preview {
+  position: absolute;
+  bottom: 14px;
+  right: 18px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: #ff9a2e;
+  text-shadow: 0 0 6px rgba(255, 110, 0, 0.9);
+  pointer-events: none;
+}
+
+/* Simulated Xenon Flash Overlay */
+.xenon-flash-burst {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.04s ease-out;
+  z-index: 10;
+}
+
+.xenon-flash-burst.firing {
+  opacity: 0.96;
+}
+
+/* Shutter & Thumb Wheel Deck */
+.shutter-deck {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.guest-badge-info {
+  font-size: 0.78rem;
+  color: #b8afa6;
+}
+
+.shutter-button-outer {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #3c3632, #211d1b);
+  border: 3px solid #574e48;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+
+.shutter-button-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #e06d48, #9a3b1e 75%);
+  border: 2px solid #f29b7e;
+  transition: transform 0.08s ease;
+}
+
+.shutter-button-outer:active .shutter-button-inner {
+  transform: scale(0.91);
+}
+
+.shutter-button-outer:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Upload Status Strip (C-06) */
+.upload-status-strip {
+  margin-top: 0.9rem;
+  background: #1c1917;
+  border: 1px solid #36302c;
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  position: relative;
+  z-index: 2;
+}
+
+.upload-queue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  color: #d6cbb9;
+  margin-bottom: 0.45rem;
+}
+
+.shot-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.shot-pill {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 0.18rem 0.48rem;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.shot-pill.waiting {
+  background: #3b2f1d;
+  color: #fcd34d;
+  border: 1px solid #785520;
+}
+
+.shot-pill.uploading,
+.shot-pill.retrying {
+  background: #1e293b;
+  color: #93c5fd;
+  border: 1px solid #3b82f6;
+}
+
+.shot-pill.saved {
+  background: #143325;
+  color: #6ee7b7;
+  border: 1px solid #059669;
+}
+
+/* Print-Ready Sign Templates Studio (Q-03) */
+.sign-templates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.printable-sign {
+  background: #fffdf9;
+  border: 2px solid #d6cbb9;
+  border-radius: 12px;
+  padding: 1.75rem 1.35rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 6px 20px rgba(28, 25, 23, 0.06);
+}
+
+.printable-sign-border {
+  border: 1px solid #c7b9a3;
+  padding: 1.25rem 1rem;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Album Photo Grid */
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1.15rem;
+  margin-top: 1rem;
+}
+
+.film-frame-card {
+  background: #181513;
+  padding: 0.65rem 0.65rem 0.8rem;
+  border-radius: 10px;
+  color: #f5efe6;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
+}
+
+.film-sprocket-bar {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: #d99b26;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.08em;
+}
+
+.film-frame-img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+  background: #0d0b0a;
+}
+
+.film-frame-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.55rem;
+  font-size: 0.78rem;
+}
+
+/* Print Stylesheet for Print-Ready Wedding Signs (Q-02, Q-03) */
+@media print {
+  .proto-topbar,
+  .host-tabs,
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #ffffff;
+  }
+  .printable-sign {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #000;
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  .editorial-title {
+    font-size: 1.55rem;
+  }
+}
