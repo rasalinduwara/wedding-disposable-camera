@@ -764,17 +764,39 @@
 
           <!-- Shareable Direct Link Copy Helper -->
           <div class="w-full mt-2.5 flex items-center justify-between text-[11px] font-sans text-gray-600 px-1">
-            <span>Total Pool: <strong id="total-pool-summary">100 exposures</strong></span>
+            <span>Cameras: <strong id="total-pool-summary">10 cameras (10 shots each)</strong></span>
             <button type="button" onclick="copyGuestQRUrl()" class="text-matteBlack font-bold underline">
               Copy Guest QR Link
             </button>
+          </div>
+
+          <!-- Host Private Photo Vault & Security Status (Accessible to Logged-in Host) -->
+          <div class="w-full mt-4 pt-3 border-t-2 border-dashed border-[#B8B0A0] text-left">
+            <div class="flex items-center justify-between mb-2">
+              <div>
+                <div class="font-archivo text-[11px] text-matteBlack uppercase">
+                  🔒 HOST PHOTO VAULT (<span id="vault-photo-count">0</span> SAVED)
+                </div>
+                <div class="font-sans text-[11px] text-gray-600">
+                  Cameras Claimed: <strong id="vault-cameras-claimed">0 / 10</strong> · EXIF GPS Stripped
+                </div>
+              </div>
+              <button
+                type="button"
+                onclick="downloadHostZipArchive()"
+                class="bg-funsaver hover:bg-[#e5bc3f] text-matteBlack border border-matteBlack font-archivo text-[10px] uppercase px-2.5 py-1.5 rounded-lg shadow transition"
+              >
+                ⬇ DOWNLOAD .ZIP
+              </button>
+            </div>
+            <div id="host-vault-grid" class="grid grid-cols-3 gap-1.5 max-h-36 overflow-y-auto pt-1"></div>
           </div>
         </div>
 
         <!-- Right Column: Vertical "Total Roll Capacity" Track Indicator (from Reference Image) -->
         <div class="w-7 flex flex-col items-center justify-end pb-4 select-none">
           <div class="font-sans font-semibold text-[11px] text-matteBlack tracking-wide whitespace-nowrap transform -rotate-90 mb-14">
-            Total Roll Capacity (<span id="vertical-cap-num">100</span>)
+            Cameras Available (<span id="vertical-cap-num">10</span>)
           </div>
           <div class="w-1.5 h-44 bg-[#222222] rounded-full relative flex flex-col justify-end items-center">
             <div
@@ -810,7 +832,7 @@
         </div>
         <!-- Neon Green Framed Selfie Mirror Preview (Matches Reference Image) -->
         <div class="w-16 h-12 rounded-md border-2 border-lcdGreen overflow-hidden bg-[#182218] relative shadow-[0_0_12px_rgba(57,255,20,0.35)] flex items-center justify-center">
-          <span class="font-vt323 text-xs text-lcdGreen/90">LIVE ROLL</span>
+          <span class="font-vt323 text-xs text-lcdGreen/90">1 PER GUEST</span>
         </div>
       </div>
 
@@ -833,11 +855,17 @@
             id="landing-welcome-text"
             class="font-sans text-sm text-[#2B2927] leading-snug mb-3"
           >
-            Welcome to the wedding! Grab a shot, but make it count. We only have 100 exposures.
+            Welcome to the wedding! Grab a shot, but make it count.
           </p>
 
+          <!-- 1-Device-1-Camera Lock Banner (Shown when this device already claimed its camera) -->
+          <div
+            id="device-lock-banner"
+            class="hidden mb-3 p-2.5 rounded-lg bg-[#222222] text-funsaver font-vt323 text-sm tracking-wider text-left border border-funsaver/50"
+          ></div>
+
           <!-- Required Guest Name or Nickname Input -->
-          <div class="mb-3 text-left">
+          <div id="guest-name-field-wrap" class="mb-3 text-left">
             <label for="guest-nickname-input" class="block font-archivo text-[10px] uppercase tracking-wider text-matteBlack mb-1">
               ENTER YOUR NAME OR NICKNAME *
             </label>
@@ -854,27 +882,38 @@
             </p>
           </div>
 
-          <!-- Recessed Neon Green Digital Exposure Counter Window -->
+          <!-- Recessed Neon Green Digital Counter Window: SHOWS CAMERAS AVAILABLE -->
           <div class="lcd-green-box rounded-lg py-2.5 px-3 text-center">
             <div
               id="landing-lcd-counter"
               class="lcd-neon-text font-vt323 text-4xl leading-none tracking-widest"
             >
-              100 / 100
+              10 / 10
             </div>
             <div class="lcd-neon-text font-vt323 text-xs uppercase tracking-widest mt-1 opacity-90">
-              SHARED EXPOSURES REMAINING (<span id="landing-per-guest-allowance">10</span> FOR YOU)
+              CAMERAS AVAILABLE (<span id="landing-per-guest-allowance">10 SHOTS</span> PER CAMERA)
             </div>
           </div>
         </div>
 
         <!-- Chunky FunSaver Yellow GRAB CAMERA Button -->
         <button
+          id="grab-camera-btn"
           type="button"
           onclick="handleGuestGrabCamera()"
           class="tactile-yellow-btn w-full py-3 rounded-xl font-archivo text-base uppercase tracking-wider mt-3.5"
         >
           GRAB CAMERA
+        </button>
+
+        <!-- Developer / Founder Helper to Simulate a Different Guest's Phone -->
+        <button
+          type="button"
+          onclick="simulateDifferentGuestPhone()"
+          class="mt-2.5 font-vt323 text-xs text-matteBlack/60 hover:text-matteBlack underline"
+          title="For testing: simulates another guest scanning on a separate phone"
+        >
+          [ TEST HELPER: SIMULATE ANOTHER GUEST'S PHONE ]
         </button>
       </div>
 
@@ -1196,12 +1235,13 @@
         title: "Sarah & John's Wedding",
         maxGuests: 10,
         shotsPerGuest: 10,
-        welcomeText: 'Welcome to the wedding! Grab a shot, but make it count. We only have 100 exposures.',
+        welcomeText: 'Welcome to the wedding! Grab a shot, but make it count.',
         active: true
       },
+      deviceId: '',
+      claimedByEvent: {}, // { [eventCode]: { [deviceId]: { guestName, shotsRemaining, claimedAt } } }
       guestName: '',
       shotsRemaining: 10,
-      sharedRemaining: 100,
       flashOn: true,
       facingMode: 'environment',
       stream: null,
@@ -1211,6 +1251,50 @@
     };
 
     // --------------------------------------------------------------------------
+    // 1-DEVICE-1-CAMERA FINGERPRINT & LOCK HELPERS
+    // --------------------------------------------------------------------------
+    function getOrCreateDeviceId() {
+      let id = appState.deviceId;
+      try {
+        if (!id) id = localStorage.getItem('graincam_device_id');
+        if (!id) {
+          const match = document.cookie.match(/graincam_device_id=([^;]+)/);
+          if (match) id = match[1];
+        }
+      } catch (e) {}
+
+      if (!id) {
+        id = 'DEV-' + Math.random().toString(36).substring(2, 10).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
+      }
+      appState.deviceId = id;
+      try {
+        localStorage.setItem('graincam_device_id', id);
+        document.cookie = `graincam_device_id=${id}; path=/; max-age=31536000; SameSite=Strict`;
+      } catch (e) {}
+      return id;
+    }
+
+    function getEventClaimsMap() {
+      const code = appState.eventConfig.code;
+      if (!appState.claimedByEvent[code]) {
+        appState.claimedByEvent[code] = {};
+      }
+      return appState.claimedByEvent[code];
+    }
+
+    function getCurrentDeviceClaim() {
+      const devId = getOrCreateDeviceId();
+      const claims = getEventClaimsMap();
+      return claims[devId] || null;
+    }
+
+    function saveClaimsState() {
+      try {
+        localStorage.setItem('graincam_claimed_by_event', JSON.stringify(appState.claimedByEvent));
+      } catch (e) {}
+    }
+
+    // --------------------------------------------------------------------------
     // INITIALIZATION & URL QR SCAN PARAMETER PARSING
     // --------------------------------------------------------------------------
     window.addEventListener('DOMContentLoaded', () => {
@@ -1218,7 +1302,9 @@
       document.getElementById('viewfinder-date-stamp').textContent = todayStamp;
       document.getElementById('darkroom-date-stamp').textContent = todayStamp;
 
-      // Load saved Host configuration & photos from localStorage if available
+      getOrCreateDeviceId();
+
+      // Load saved Host configuration, device claims & photos from localStorage
       try {
         const savedHost = localStorage.getItem('graincam_host_user');
         if (savedHost) appState.hostUser = JSON.parse(savedHost);
@@ -1226,6 +1312,11 @@
         const savedConfig = localStorage.getItem('graincam_event_config');
         if (savedConfig) {
           appState.eventConfig = { ...appState.eventConfig, ...JSON.parse(savedConfig) };
+        }
+
+        const savedClaims = localStorage.getItem('graincam_claimed_by_event');
+        if (savedClaims) {
+          appState.claimedByEvent = JSON.parse(savedClaims);
         }
 
         const savedPhotos = localStorage.getItem('graincam_photos');
@@ -1247,7 +1338,7 @@
         syncGuestLandingUI();
         updateGalleryCounters();
         switchScreen('welcome');
-        showToast('QR Code Scanned! Enter your nickname to grab your camera.');
+        showToast('QR Code Scanned! 1 Camera allowed per guest device.');
         return;
       }
 
@@ -1392,12 +1483,17 @@
       appState.eventConfig.shotsPerGuest = shotsPerGuest;
       appState.eventConfig.welcomeText = welcomeText;
 
-      const totalPool = maxGuests * shotsPerGuest;
-      document.getElementById('total-pool-summary').textContent = `${totalPool} exposures (${maxGuests} guests × ${shotsPerGuest} shots)`;
-      document.getElementById('vertical-cap-num').textContent = totalPool;
+      const claimsCount = Object.keys(getEventClaimsMap()).length;
+      const camerasAvailable = Math.max(0, maxGuests - claimsCount);
 
-      // Move vertical capacity knob proportionally
-      const pct = Math.min(85, Math.max(8, 100 - Math.round((totalPool / 1200) * 85)));
+      document.getElementById('total-pool-summary').textContent = `${camerasAvailable} of ${maxGuests} cameras available (${shotsPerGuest} shots each)`;
+      document.getElementById('vertical-cap-num').textContent = `${camerasAvailable}/${maxGuests}`;
+      const vaultClaimed = document.getElementById('vault-cameras-claimed');
+      if (vaultClaimed) vaultClaimed.textContent = `${claimsCount} / ${maxGuests}`;
+
+      // Move vertical capacity knob proportionally to cameras remaining
+      const ratio = maxGuests > 0 ? camerasAvailable / maxGuests : 1;
+      const pct = Math.min(85, Math.max(8, Math.round((1 - ratio) * 80) + 8));
       document.getElementById('capacity-knob').style.top = `${pct}%`;
 
       try {
@@ -1522,21 +1618,87 @@
     }
 
     // --------------------------------------------------------------------------
-    // 3. GUEST LANDING PAGE ("THE WELCOME OVERLAY")
+    // 3. GUEST LANDING PAGE ("THE WELCOME OVERLAY") — SHOWS CAMERAS AVAILABLE
+    //    AND ENFORCES 1 CAMERA PER GUEST DEVICE
     // --------------------------------------------------------------------------
     function syncGuestLandingUI() {
       const cfg = appState.eventConfig;
-      const totalPool = cfg.maxGuests * cfg.shotsPerGuest;
-      const takenTotal = appState.photos.length;
-      const remainingPool = Math.max(0, totalPool - takenTotal);
+      const claimsMap = getEventClaimsMap();
+      const claimedCount = Object.keys(claimsMap).length;
+      const camerasAvailable = Math.max(0, cfg.maxGuests - claimedCount);
 
       document.getElementById('landing-event-title').textContent = cfg.title;
       document.getElementById('landing-welcome-text').textContent = cfg.welcomeText;
-      document.getElementById('landing-lcd-counter').textContent = `${remainingPool} / ${totalPool}`;
+
+      // Display Available Cameras (not total exposures) on the Guest Landing LCD
+      document.getElementById('landing-lcd-counter').textContent = `${camerasAvailable} / ${cfg.maxGuests}`;
       document.getElementById('landing-per-guest-allowance').textContent = `${cfg.shotsPerGuest} SHOTS`;
+
+      const existingClaim = getCurrentDeviceClaim();
+      const lockBanner = document.getElementById('device-lock-banner');
+      const nameFieldWrap = document.getElementById('guest-name-field-wrap');
+      const grabBtn = document.getElementById('grab-camera-btn');
+
+      if (existingClaim) {
+        appState.guestName = existingClaim.guestName;
+        appState.shotsRemaining = existingClaim.shotsRemaining;
+        lockBanner.classList.remove('hidden');
+
+        if (existingClaim.shotsRemaining > 0) {
+          lockBanner.innerHTML = `🔒 <strong>1-DEVICE LOCK ACTIVE:</strong> This phone is already assigned to <strong>${existingClaim.guestName}</strong>'s camera (${existingClaim.shotsRemaining} shots left).`;
+          nameFieldWrap.classList.add('hidden');
+          grabBtn.disabled = false;
+          grabBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+          grabBtn.textContent = `RESUME MY CAMERA (${existingClaim.shotsRemaining} LEFT)`;
+        } else {
+          lockBanner.innerHTML = `🔒 <strong>CAMERA COMPLETED ON THIS DEVICE:</strong> ${existingClaim.guestName} has used all ${cfg.shotsPerGuest} shots. Limit is 1 camera per guest device so other guests can shoot too!`;
+          nameFieldWrap.classList.add('hidden');
+          grabBtn.disabled = true;
+          grabBtn.classList.add('opacity-50', 'cursor-not-allowed');
+          grabBtn.textContent = '1 CAMERA LIMIT REACHED ON DEVICE';
+        }
+      } else {
+        lockBanner.classList.add('hidden');
+        nameFieldWrap.classList.remove('hidden');
+
+        if (camerasAvailable <= 0) {
+          grabBtn.disabled = true;
+          grabBtn.classList.add('opacity-50', 'cursor-not-allowed');
+          grabBtn.textContent = 'ALL CAMERAS CLAIMED (0 LEFT)';
+        } else {
+          grabBtn.disabled = false;
+          grabBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+          grabBtn.textContent = 'GRAB CAMERA';
+        }
+      }
     }
 
     function handleGuestGrabCamera() {
+      const cfg = appState.eventConfig;
+      const existingClaim = getCurrentDeviceClaim();
+
+      // Case A: This device already claimed its 1 allowed camera
+      if (existingClaim) {
+        if (existingClaim.shotsRemaining <= 0) {
+          showToast('1 Camera Per Device Limit: You have already completed your camera roll!');
+          return;
+        }
+        appState.guestName = existingClaim.guestName;
+        appState.shotsRemaining = existingClaim.shotsRemaining;
+        applyGuestCameraLabels();
+        playSwitchClickSound();
+        switchScreen('camera');
+        return;
+      }
+
+      // Case B: New device claiming its 1 allowed camera
+      const claimsMap = getEventClaimsMap();
+      const camerasAvailable = Math.max(0, cfg.maxGuests - Object.keys(claimsMap).length);
+      if (camerasAvailable <= 0) {
+        showToast('All cameras for this event have already been claimed by guests!');
+        return;
+      }
+
       const nameInput = document.getElementById('guest-nickname-input');
       const errEl = document.getElementById('guest-name-error');
       const nickname = nameInput.value.trim();
@@ -1548,21 +1710,46 @@
       }
       errEl.classList.add('hidden');
 
-      appState.guestName = nickname;
-      appState.shotsRemaining = appState.eventConfig.shotsPerGuest;
+      const devId = getOrCreateDeviceId();
+      claimsMap[devId] = {
+        deviceId: devId,
+        guestName: nickname,
+        shotsRemaining: cfg.shotsPerGuest,
+        claimedAt: new Date().toISOString()
+      };
+      saveClaimsState();
 
-      // Update Packaging & Camera screens with Guest's name and configured shot limit
+      appState.guestName = nickname;
+      appState.shotsRemaining = cfg.shotsPerGuest;
+
+      applyGuestCameraLabels();
+      syncConfigFromInputs();
+      playSwitchClickSound();
+      showToast(`Camera locked to ${nickname}'s device! (${ Math.max(0, cfg.maxGuests - Object.keys(claimsMap).length) } cameras left for other guests)`);
+      switchScreen('packaging');
+    }
+
+    function applyGuestCameraLabels() {
       const formattedShots = String(appState.shotsRemaining).padStart(2, '0');
       document.getElementById('pkg-shots-badge').textContent = `${formattedShots} EXP`;
       document.getElementById('pkg-guest-label').textContent =
-        `ISSUED TO: ${nickname.toUpperCase()} · ${appState.shotsRemaining} SHOTS ALLOWED`;
+        `ISSUED TO: ${appState.guestName.toUpperCase()} · ${appState.shotsRemaining} SHOTS ALLOWED`;
       document.getElementById('cam-event-label').textContent = appState.eventConfig.title.toUpperCase();
-      document.getElementById('cam-guest-badge').textContent = `GUEST: ${nickname.toUpperCase()}`;
+      document.getElementById('cam-guest-badge').textContent = `GUEST: ${appState.guestName.toUpperCase()}`;
       document.getElementById('lcd-shot-counter').textContent = formattedShots;
       document.getElementById('nav-count').textContent = formattedShots;
+    }
 
-      playSwitchClickSound();
-      switchScreen('packaging');
+    function simulateDifferentGuestPhone() {
+      const newDevId = 'DEV-' + Math.random().toString(36).substring(2, 10).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
+      appState.deviceId = newDevId;
+      try {
+        localStorage.setItem('graincam_device_id', newDevId);
+        document.cookie = `graincam_device_id=${newDevId}; path=/; max-age=31536000; SameSite=Strict`;
+      } catch (e) {}
+      document.getElementById('guest-nickname-input').value = '';
+      syncGuestLandingUI();
+      showToast('Simulated a fresh Guest Mobile Device! You can now test claiming another camera.');
     }
 
     // --------------------------------------------------------------------------
@@ -1756,6 +1943,14 @@
       capture90sFilmPhoto();
 
       appState.shotsRemaining = Math.max(0, appState.shotsRemaining - 1);
+
+      // Persist updated shot count to this device's 1-Device-1-Camera lock record
+      const claim = getCurrentDeviceClaim();
+      if (claim) {
+        claim.shotsRemaining = appState.shotsRemaining;
+        saveClaimsState();
+      }
+
       const formattedCount = String(appState.shotsRemaining).padStart(2, '0');
       document.getElementById('lcd-shot-counter').textContent = formattedCount;
       document.getElementById('nav-count').textContent = formattedCount;
@@ -1815,12 +2010,14 @@
       ctx.fillText(getFormattedDateStamp(), out.width - 28, out.height - 22);
       ctx.restore();
 
+      // Re-encoding via canvas.toDataURL automatically strips all EXIF GPS/Device metadata for privacy!
       const dataUrl = out.toDataURL('image/jpeg', 0.86);
       const shotIndex = appState.photos.length + 1;
       appState.photos.unshift({
         id: Date.now(),
         frame: shotIndex,
         guest: appState.guestName || 'Guest',
+        eventCode: appState.eventConfig.code,
         dataUrl
       });
 
@@ -1837,6 +2034,8 @@
       document.getElementById('taken-pill-count').textContent = count;
       document.getElementById('darkroom-photo-count').textContent = count;
       document.getElementById('gallery-btn-count').textContent = count;
+      const vaultCount = document.getElementById('vault-photo-count');
+      if (vaultCount) vaultCount.textContent = count;
 
       const grid = document.getElementById('gallery-grid');
       grid.innerHTML = appState.photos
@@ -1852,6 +2051,25 @@
         `
         )
         .join('');
+
+      // Also populate the Host Private Photo Vault inside the Host Dashboard
+      const vaultGrid = document.getElementById('host-vault-grid');
+      if (vaultGrid) {
+        if (count === 0) {
+          vaultGrid.innerHTML = `<div class="col-span-3 font-sans text-[11px] text-gray-500 py-2 text-center">No guest photos uploaded yet.</div>`;
+        } else {
+          vaultGrid.innerHTML = appState.photos
+            .map(
+              (p) => `
+              <div class="bg-[#1A1A1A] p-1 rounded border border-[#9E9689] text-white">
+                <img src="${p.dataUrl}" alt="Frame ${p.frame}" class="w-full aspect-[4/3] object-cover rounded-sm" />
+                <div class="font-vt323 text-[11px] text-funsaver truncate mt-0.5">#${p.frame} ${p.guest}</div>
+              </div>
+            `
+            )
+            .join('');
+        }
+      }
     }
 
     function toggleDevelopedGallery() {
@@ -1860,20 +2078,46 @@
     }
 
     function loadNewGuestRoll() {
-      appState.shotsRemaining = appState.eventConfig.shotsPerGuest;
-      const formatted = String(appState.shotsRemaining).padStart(2, '0');
-      document.getElementById('lcd-shot-counter').textContent = formatted;
-      document.getElementById('nav-count').textContent = formatted;
+      // Returning to Guest Landing respects the 1-Device-1-Camera lock
+      syncGuestLandingUI();
       switchScreen('welcome');
     }
 
     function downloadAllPrints() {
+      if (appState.photos.length === 0) {
+        showToast('No photos taken yet!');
+        return;
+      }
       appState.photos.forEach((p) => {
         const a = document.createElement('a');
         a.href = p.dataUrl;
         a.download = `GrainCam_${(p.guest || 'Guest').replace(/\s+/g, '_')}_Frame_${p.frame}.jpg`;
         a.click();
       });
+    }
+
+    function downloadHostZipArchive() {
+      if (appState.photos.length === 0) {
+        showToast('No guest photos in the vault yet! Take a few test shots first.');
+        return;
+      }
+      if (typeof window.ZipArchiveBuilder === 'function') {
+        const zip = new window.ZipArchiveBuilder();
+        appState.photos.forEach((p) => {
+          const safeGuest = (p.guest || 'Guest').replace(/[^a-zA-Z0-9_-]/g, '_');
+          zip.addDataUrlFile(`${safeGuest}_Frame_${String(p.frame).padStart(2, '0')}.jpg`, p.dataUrl);
+        });
+        const blob = zip.generateBlob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${appState.eventConfig.title.replace(/[^a-zA-Z0-9]/g, '_')}_Host_Vault.zip`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast(`Downloaded Host ZIP Archive (${appState.photos.length} photos)!`);
+      } else {
+        downloadAllPrints();
+      }
     }
 
     // Darkroom VCR Countdown Timer
